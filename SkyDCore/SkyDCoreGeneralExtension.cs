@@ -418,13 +418,7 @@ public static class SkyDCoreGeneralExtension
     /// <returns>拼接后的字符串</returns>
     public static string ExpandAndToString(this IEnumerable s, string separator)
     {
-        StringBuilder sb = new StringBuilder();
-        foreach (var f in s)
-        {
-            if (sb.Length > 0) sb.Append(separator);
-            sb.Append(f.ToString());
-        }
-        return sb.ToString();
+        return SkyDCoreTextAssist.ExpandAndToString(s, separator);
     }
 
     /// <summary>
