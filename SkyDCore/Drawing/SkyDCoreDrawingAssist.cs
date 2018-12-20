@@ -39,6 +39,9 @@ namespace SkyDCore.Drawing
         Center = 16
     }
 
+    /// <summary>
+    /// 绘图辅助类
+    /// </summary>
     public static class SkyDCoreDrawingAssist
     {
 

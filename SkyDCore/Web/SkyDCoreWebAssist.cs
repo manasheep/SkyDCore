@@ -6,6 +6,9 @@ using System.Text;
 
 namespace SkyDCore.Web
 {
+    /// <summary>
+    /// 网页辅助类
+    /// </summary>
     public static class SkyDCoreWebAssist
     {
         /// <summary>

@@ -8,6 +8,9 @@ using System.Security.Cryptography;
 
 namespace SkyDCore.Text
 {
+    /// <summary>
+    /// 文字辅助类
+    /// </summary>
     public static class SkyDCoreTextAssist
     {
         /// <summary>

@@ -7,6 +7,9 @@ using System.Reflection;
 
 namespace SkyDCore.Reflection
 {
+    /// <summary>
+    /// 反射辅助类
+    /// </summary>
     public static class SkyDCoreReflectionAssist
     {
         /// <summary>
