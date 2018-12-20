@@ -24,6 +24,64 @@ public static class SkyDCoreGeneralExtension
     static Random R = new Random();
 
     /// <summary>
+    /// 将另一个字典的内容复制到此字典
+    /// </summary>
+    /// <typeparam name="Key">键</typeparam>
+    /// <typeparam name="Value">值</typeparam>
+    /// <param name="combineWithDic">待并入的字典</param>
+    /// <param name="isSkipConflictKey">指示发现已有的键时，是否跳过</param>
+    public static void Combine<Key, Value>(this IDictionary<Key, Value> sourceDic, IDictionary<Key, Value> combineWithDic, bool isSkipConflictKey)
+    {
+        foreach (Key f in combineWithDic.Keys)
+        {
+            if (sourceDic.ContainsKey(f))
+            {
+                if (!isSkipConflictKey) sourceDic[f] = combineWithDic[f];
+            }
+            else
+            {
+                sourceDic.Add(f, combineWithDic[f]);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 如果键存在则更新其值，否则就添加一个新键值对
+    /// </summary>
+    public static void AddOrUpdate<Key, Value>(this IDictionary<Key, Value> o, Key key, Value value)
+    {
+        if (o.ContainsKey(key)) o[key] = value;
+        else o.Add(key, value);
+    }
+
+
+    /// <summary>
+    /// 获取集合中指定索引位置的对象，如果没有则返回默认值
+    /// </summary>
+    public static T GetItemByIndex<T>(this IEnumerable<T> o, int index)
+    {
+        var e = o.GetEnumerator();
+        for (int i = 0; i < index; i++)
+        {
+            if (!e.MoveNext()) return default(T);
+        }
+        return e.Current;
+    }
+
+    /// <summary>
+    /// 获取集合中指定索引位置的对象，如果没有则返回null
+    /// </summary>
+    public static object GetItemByIndex(this IEnumerable o, int index)
+    {
+        var e = o.GetEnumerator();
+        for (int i = 0; i < index; i++)
+        {
+            if (!e.MoveNext()) return null;
+        }
+        return e.Current;
+    }
+
+    /// <summary>
     /// 转换Base64字符串为字节数组，如果格式有误则输出null
     /// </summary>
     /// <param name="base64String">Base64字符串</param>
