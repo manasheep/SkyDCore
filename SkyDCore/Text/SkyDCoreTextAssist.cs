@@ -50,6 +50,15 @@ namespace SkyDCore.Text
         /// </summary>
         public const string StandardTimeFormat = "HH:mm:ss";
 
+        /// <summary>
+        /// 电子邮件地址格式正则匹配代码
+        /// </summary>
+        public const string EmailFormatRegularExpressions = @"[a-zA-Z0-9_\.]+@[a-zA-Z0-9\-_\.]{1,16}\.(cn|com|net|org|biz|name|info|tw|hk)";
+        /// <summary>
+        /// 超文本协议地址格式正则匹配代码
+        /// </summary>
+        public const string HttpUrlFormatRegularExpressions = @"(?<协议>http|https)://(?<地址>[%\w\.\/\?=:\-_]+)";
+
         #endregion
 
         /// <summary>
