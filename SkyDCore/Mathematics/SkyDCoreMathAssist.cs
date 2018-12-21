@@ -155,5 +155,50 @@ namespace SkyDCore.Mathematics
             double small = Math.Min(a, b);
             return Math.Min(big - small, 360 - big + small);
         }
+
+        /// <summary>
+        /// 将小数转换为百分数.
+        /// </summary>
+        /// <param name="value">要转换的数值</param>
+        /// <returns>字符串形式显示的百分数</returns>
+        public static string ToPercentage(this double value)
+        {
+            return String.Format("{0:P0}", value);
+        }
+
+        /// <summary>
+        /// 将数字转换为16进制显示，如:3F
+        /// </summary>
+        public static string ToHex(this int value)
+        {
+            return value.ToString("x");
+        }
+
+        /// <summary>
+        /// 获得斐波那契数列中指定位置的值
+        /// </summary>
+        /// <param name="index">索引位置</param>
+        /// <returns>数值</returns>
+        public static long GetFibonacci(int index)
+        {
+            long x = 0;
+            if (index <= 0) x = 0;
+            else if (index <= 2) x = 1;
+            else x = GetFibonacci(index - 1) + GetFibonacci(index - 2);
+            return x;
+        }
+
+        /// <summary>
+        /// 将输入的数字四舍五入
+        /// </summary>
+        /// <param name="value">输入数字</param>
+        /// <param name="decimalDigits">要保留的小数位数(可以为负数)</param>
+        /// <returns>四舍五入后的值</returns>
+        public static double RoundOff(this double value, int decimalDigits)
+        {
+            value = value * System.Math.Pow(10, decimalDigits) + 0.5;
+            value = ((int)value) / System.Math.Pow(10, decimalDigits);
+            return value;
+        }
     }
 }
