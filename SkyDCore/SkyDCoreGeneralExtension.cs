@@ -24,6 +24,52 @@ public static class SkyDCoreGeneralExtension
     static Random R = new Random();
 
     /// <summary>
+    /// 分页获取集合中的实体对象集合
+    /// </summary>
+    /// <param name="pageIndex">当前页数，从0开始记数</param>
+    /// <param name="objectNumPerPage">每页承载的实体数目</param>
+    /// <returns>分页后的实体对象集合</returns>
+    public static IQueryable<T> PagingGet<T>(this IQueryable<T> o, int pageIndex, int objectNumPerPage)
+    {
+        return o.Skip(pageIndex * objectNumPerPage).Take(objectNumPerPage);
+    }
+
+    /// <summary>
+    /// 计算分页后的总页数
+    /// </summary>
+    /// <param name="objectNumPerPage">每页承载的实体数目</param>
+    /// <returns>分页后的总页数</returns>
+    public static int PagingCount<T>(this IQueryable<T> o, int objectNumPerPage)
+    {
+        var x = o.Count();
+        if (x == 0) return 0;
+        return x / objectNumPerPage + (x % objectNumPerPage > 0 ? 1 : 0);
+    }
+
+    /// <summary>
+    /// 分页获取集合中的实体对象集合
+    /// </summary>
+    /// <param name="pageIndex">当前页数，从0开始记数</param>
+    /// <param name="objectNumPerPage">每页承载的实体数目</param>
+    /// <returns>分页后的实体对象集合</returns>
+    public static IEnumerable<T> PagingGet<T>(this IEnumerable<T> o, int pageIndex, int objectNumPerPage)
+    {
+        return o.Skip(pageIndex * objectNumPerPage).Take(objectNumPerPage);
+    }
+
+    /// <summary>
+    /// 计算分页后的总页数
+    /// </summary>
+    /// <param name="objectNumPerPage">每页承载的实体数目</param>
+    /// <returns>分页后的总页数</returns>
+    public static int PagingCount<T>(this IEnumerable<T> o, int objectNumPerPage)
+    {
+        var x = o.Count();
+        if (x == 0) return 0;
+        return x / objectNumPerPage + (x % objectNumPerPage > 0 ? 1 : 0);
+    }
+
+    /// <summary>
     /// 将另一个字典的内容复制到此字典
     /// </summary>
     /// <typeparam name="Key">键</typeparam>

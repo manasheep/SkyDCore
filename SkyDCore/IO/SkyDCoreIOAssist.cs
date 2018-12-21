@@ -652,7 +652,7 @@ namespace SkyDCore.IO
         }
 
         /// <summary>
-        /// 通过包含序列化的内存流反序列化对象.
+        /// 通过包含序列化的内存流反序列化对象
         /// </summary>
         /// <param name="stream">输入数据流</param>
         /// <returns>反序列化后的对象</returns>
