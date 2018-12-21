@@ -59,22 +59,22 @@ namespace SkyDCore.Reflection
         /// </summary>     
         /// <typeparam name="T">元素类型</typeparam>
         /// <typeparam name="PT">属性类型</typeparam>
-        /// <param name="表达式">获取属性的表达式</param>     
+        /// <param name="expressionToGetProperty">获取属性的表达式</param>     
         /// <returns>属性的名称</returns>     
-        public static string GetPropertyName<T, PT>(Expression<Func<T, PT>> 表达式)
+        public static string GetPropertyName<T, PT>(Expression<Func<T, PT>> expressionToGetProperty)
         {
             string rtn = string.Empty;
-            if (表达式.Body is UnaryExpression)
+            if (expressionToGetProperty.Body is UnaryExpression)
             {
-                rtn = ((MemberExpression)((UnaryExpression)表达式.Body).Operand).Member.Name;
+                rtn = ((MemberExpression)((UnaryExpression)expressionToGetProperty.Body).Operand).Member.Name;
             }
-            else if (表达式.Body is MemberExpression)
+            else if (expressionToGetProperty.Body is MemberExpression)
             {
-                rtn = ((MemberExpression)表达式.Body).Member.Name;
+                rtn = ((MemberExpression)expressionToGetProperty.Body).Member.Name;
             }
-            else if (表达式.Body is ParameterExpression)
+            else if (expressionToGetProperty.Body is ParameterExpression)
             {
-                rtn = 表达式.Body.Type.Name;
+                rtn = expressionToGetProperty.Body.Type.Name;
             }
             return rtn;
         }
@@ -84,22 +84,22 @@ namespace SkyDCore.Reflection
         /// </summary>     
         /// <typeparam name="T">元素类型</typeparam>
         /// <typeparam name="PT">属性类型</typeparam>
-        /// <param name="表达式">获取属性的表达式</param>     
+        /// <param name="expressionToGetProperty">获取属性的表达式</param>     
         /// <returns>属性的类型</returns>     
-        public static Type GetPropertyType<T, PT>(Expression<Func<T, PT>> 表达式)
+        public static Type GetPropertyType<T, PT>(Expression<Func<T, PT>> expressionToGetProperty)
         {
             Type rtn = null;
-            if (表达式.Body is UnaryExpression)
+            if (expressionToGetProperty.Body is UnaryExpression)
             {
-                rtn = ((MemberExpression)((UnaryExpression)表达式.Body).Operand).Member.GetPropertyValue("PropertyType") as Type;
+                rtn = SkyDCoreGeneralExtension.GetPropertyValue(((MemberExpression)((UnaryExpression)expressionToGetProperty.Body).Operand).Member, "PropertyType") as Type;
             }
-            else if (表达式.Body is MemberExpression)
+            else if (expressionToGetProperty.Body is MemberExpression)
             {
-                rtn = ((MemberExpression)表达式.Body).Member.GetPropertyValue("PropertyType") as Type;
+                rtn = SkyDCoreGeneralExtension.GetPropertyValue(((MemberExpression)expressionToGetProperty.Body).Member, "PropertyType") as Type;
             }
-            else if (表达式.Body is ParameterExpression)
+            else if (expressionToGetProperty.Body is ParameterExpression)
             {
-                rtn = 表达式.Body.Type;
+                rtn = expressionToGetProperty.Body.Type;
             }
             return rtn;
         }
@@ -107,21 +107,21 @@ namespace SkyDCore.Reflection
         /// <summary>
         /// 通过反射获取属性值
         /// </summary>
-        /// <param name="属性名">属性名</param>
+        /// <param name="propertyName">属性名</param>
         /// <returns>属性值</returns>
-        public static object 反射获取属性值(this object o, string 属性名)
+        public static object GetPropertyValue(this object o, string propertyName)
         {
-            return o.GetType().GetProperty(属性名, flags).GetValue(o, null);
+            return o.GetType().GetProperty(propertyName, flags).GetValue(o, null);
         }
 
         /// <summary>
         /// 通过反射设置属性值
         /// </summary>
-        /// <param name="属性名">属性名</param>
-        /// <param name="属性值">属性值</param>
-        public static void 反射设置属性值(this object o, string 属性名, object 属性值)
+        /// <param name="propertyName">属性名</param>
+        /// <param name="propertyValue">属性值</param>
+        public static void SetPropertyValue(this object o, string propertyName, object propertyValue)
         {
-            o.GetType().GetProperty(属性名, flags).SetValue(o, 属性值, null);
+            o.GetType().GetProperty(propertyName, flags).SetValue(o, propertyValue, null);
         }
 
         private static BindingFlags flags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.IgnoreCase;
@@ -129,15 +129,15 @@ namespace SkyDCore.Reflection
         /// <summary>
         /// 获取指定类的特定类型属性的映射索引，可以通过调用获取到的实例的GetValue及SetValue方法操作属性值
         /// </summary>
-        /// <typeparam name="类型">要获取的对象类型</typeparam>
-        /// <typeparam name="属性类型">要返回的映射索引的属性类型</typeparam>
+        /// <typeparam name="Type">要获取的对象类型</typeparam>
+        /// <typeparam name="PropertyType">要返回的映射索引的属性类型</typeparam>
         /// <returns>属性映射索引</returns>
-        public static List<PropertyInfo> 获取属性映射索引<类型, 属性类型>()
+        public static List<PropertyInfo> GetPropertyMapIndexes<Type, PropertyType>()
         {
             List<PropertyInfo> l = new List<PropertyInfo>();
-            foreach (PropertyInfo f in typeof(类型).GetProperties())
+            foreach (PropertyInfo f in typeof(Type).GetProperties())
             {
-                if (f.PropertyType == typeof(属性类型)) l.Add(f);
+                if (f.PropertyType == typeof(PropertyType)) l.Add(f);
             }
             return l;
         }
@@ -145,12 +145,12 @@ namespace SkyDCore.Reflection
         /// <summary>
         /// 获取指定类的所有类型属性的映射索引，可以通过调用获取到的实例的GetValue及SetValue方法操作属性值
         /// </summary>
-        /// <typeparam name="类型">要获取的对象类型</typeparam>
+        /// <typeparam name="Type">要获取的对象类型</typeparam>
         /// <returns>属性映射索引</returns>
-        public static List<PropertyInfo> 获取属性映射索引<类型>()
+        public static List<PropertyInfo> GetPropertyMapIndexes<Type>()
         {
             List<PropertyInfo> l = new List<PropertyInfo>();
-            foreach (PropertyInfo f in typeof(类型).GetProperties())
+            foreach (PropertyInfo f in typeof(Type).GetProperties())
             {
                 l.Add(f);
             }
@@ -161,39 +161,39 @@ namespace SkyDCore.Reflection
         /// 获取指定枚举类型的所有枚举项
         /// </summary>
         /// <returns>枚举项</returns>
-        public static Array 获取枚举项<枚举类型>()
+        public static Array GetEnumItems<Enum>()
         {
-            return Enum.GetValues(typeof(枚举类型));
+            return System.Enum.GetValues(typeof(Enum));
         }
 
         /// <summary>
         /// 获得程序集全名，如“Core, Version=2.1.0.0, Culture=neutral, PublicKeyToken=null”
         /// </summary>
-        /// <param name="类型">要解析的类型</param>
+        /// <param name="type">要解析的类型</param>
         /// <returns>程序集全名</returns>
-        public static string 获取类型所在程序集全名(this Type 类型)
+        public static string GetAssemblyFullNameByType(this Type type)
         {
-            return 类型.Assembly.FullName;
+            return type.Assembly.FullName;
         }
 
         /// <summary>
         /// 获得类型全名，如“Core.函数库.解析”
         /// </summary>
-        /// <param name="类型">要解析的类型</param>
+        /// <param name="type">要解析的类型</param>
         /// <returns>类型全名</returns>
-        public static string 获取类型全名(this Type 类型)
+        public static string GetTypeFullName(this Type type)
         {
-            return 类型.FullName;
+            return type.FullName;
         }
 
         /// <summary>
         /// 获取程序集限定名，如“Core.函数库.解析, Core, Version=2.1.0.0, Culture=neutral, PublicKeyToken=null”
         /// </summary>
-        /// <param name="类型">要解析的类型</param>
+        /// <param name="type">要解析的类型</param>
         /// <returns>程序集限定名</returns>
-        public static string 获取类型程序集限定名(this Type 类型)
+        public static string GetTypeAssemblyQualifiedName(this Type type)
         {
-            return 类型.AssemblyQualifiedName;
+            return type.AssemblyQualifiedName;
         }
     }
 }

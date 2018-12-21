@@ -39,7 +39,7 @@ public static class SkyDCoreGeneralExtension
     /// </summary>
     /// <param name="objectNumPerPage">每页承载的实体数目</param>
     /// <returns>分页后的总页数</returns>
-    public static int PagingCount<T>(this IQueryable<T> o, int objectNumPerPage)
+    public static int PageCount<T>(this IQueryable<T> o, int objectNumPerPage)
     {
         var x = o.Count();
         if (x == 0) return 0;
