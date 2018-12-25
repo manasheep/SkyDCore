@@ -578,12 +578,12 @@ namespace SkyDCore.Web
         /// <summary>
         /// 返回 URL 地址字符串的编码结果
         /// </summary>
-        /// <param name="URL地址">URL路径字符串</param>
+        /// <param name="url">URL路径字符串</param>
         /// <returns>编码结果</returns>
         // ReSharper disable once InconsistentNaming
-        public static string UrlPathEncode(this string URL地址)
+        public static string UrlPathEncode(this string url)
         {
-            return HttpUtility.UrlPathEncode(URL地址);
+            return HttpUtility.UrlPathEncode(url);
         }
     }
 }
