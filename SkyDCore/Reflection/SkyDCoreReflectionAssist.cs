@@ -13,6 +13,22 @@ namespace SkyDCore.Reflection
     public static class SkyDCoreReflectionAssist
     {
         /// <summary>
+        /// 动态调用静态泛型方法。
+        /// 参考：https://www.cnblogs.com/lichence/archive/2012/03/13/2393758.html
+        /// </summary>
+        /// <param name="staticMethodOwnerType">静态方法所在类型</param>
+        /// <param name="staticMethodName">静态方法名称</param>
+        /// <param name="genericTypeArray">泛型参数类型数组</param>
+        /// <param name="paramsArray">传入参数数组</param>
+        /// <returns>返回值</returns>
+        public static object DynamicInvokeStaticGenericMethod(Type staticMethodOwnerType, string staticMethodName, Type[] genericTypeArray, params object[] paramsArray)
+        {
+            MethodInfo staticMethod = staticMethodOwnerType.GetMethod(staticMethodName);
+            MethodInfo curMethod = staticMethod.MakeGenericMethod(genericTypeArray);
+            return curMethod.Invoke(null, paramsArray);
+        }
+
+        /// <summary>
         /// 获取嵌套调用方法堆栈集合
         /// </summary>
         /// <returns>嵌套调用方法堆栈集合</returns>

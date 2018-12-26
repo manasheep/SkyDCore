@@ -24,6 +24,31 @@ public static class SkyDCoreGeneralExtension
     static Random R = new Random();
 
     /// <summary>
+    /// 将对象的公共属性值映射到另一个对象，可以是不同类型但具有相同字段名称的目标对象
+    /// </summary>
+    /// <typeparam name="TIn">源类型</typeparam>
+    /// <typeparam name="TOut">输出类型</typeparam>
+    /// <param name="tIn">源对象</param>
+    /// <param name="tOut">输出对象</param>
+    /// <param name="inputAndOutpuMemberCheck">输入或输出属性验证</param>
+    /// <returns>映射后的目标对象</returns>
+    public static TOut MapTo<TIn, TOut>(this TIn tIn, TOut tOut, Predicate<Tuple<PropertyInfo, PropertyInfo>> inputAndOutpuMemberCheck = null)
+    {
+        //TOut tOut = Activator.CreateInstance<TOut>();
+        var tInType = tIn.GetType();
+        foreach (var itemOut in tOut.GetType().GetProperties())
+        {
+            var itemIn = tInType.GetProperty(itemOut.Name); ;
+            if (inputAndOutpuMemberCheck != null && !inputAndOutpuMemberCheck(new Tuple<PropertyInfo, PropertyInfo>(itemIn, itemOut))) continue;
+            if (itemOut.CanWrite && itemIn.CanRead)
+            {
+                itemOut.SetValue(tOut, itemIn.GetValue(tIn, null), null);
+            }
+        }
+        return tOut;
+    }
+
+    /// <summary>
     /// 分页获取集合中的实体对象集合
     /// </summary>
     /// <param name="pageIndex">当前页数，从0开始记数</param>
