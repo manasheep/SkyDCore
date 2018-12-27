@@ -153,18 +153,21 @@ namespace SkyDCore.Drawing
         /// <param name="targetHeight">指定的高度，当mode为ResizeMode.Pad时，设为0则忽略，而以令一个边为准</param>
         /// <param name="mode">
         ///     <para>缩放时采用的处理方式：</para>
-        ///     <para>BoxPad-缩小时双边长度限制，放大时不放大原图，输出的图像尺寸即为目标尺寸，可能会留空；</para>
+        ///     <para>BoxPad-缩小时双边长度限制，放大时不放大原图，输出的图像尺寸即为目标尺寸，可能会留空，可通过backgroundColor参数指定空的部分的背景颜色；</para>
         ///     <para>Crop-短边适配，长边裁剪；</para>
         ///     <para>Max-以长边为准进行适配；</para>
         ///     <para>Min-以短边为准进行适配；</para>
-        ///     <para>Pad-缩小时类似BoxPad，但如果某边传入的目标值为0则以另一边为准进行适配，放大时会填充至少一个方向到目标尺寸，输出的图像尺寸即为目标尺寸，可能会留空；</para>
+        ///     <para>Pad-缩小时类似BoxPad，但如果某边传入的目标值为0则以另一边为准进行适配，放大时会填充至少一个方向到目标尺寸，输出的图像尺寸即为目标尺寸，可能会留空，可通过backgroundColor参数指定空的部分的背景颜色；</para>
         ///     <para>Stretch-拉伸画面到目标尺寸</para>
         /// </param>
         /// <param name="anchor">当画面比图像大时，图像的停靠方位，适用于mode为ResizeMode.Pad或ResizeMode.BoxPad的情况</param>
+        /// <param name="backgroundColor">背景颜色，留空则为默认颜色，适用于mode为ResizeMode.Pad或ResizeMode.BoxPad的情况</param>
         /// <returns>图像修改上下文</returns>
-        public static IImageProcessingContext<TPixel> Scale<TPixel>(this IImageProcessingContext<TPixel> context, int targetWidth, int targetHeight, ResizeMode mode = ResizeMode.Pad, AnchorPositionMode anchor = AnchorPositionMode.Center) where TPixel : struct, IPixel<TPixel>
+        public static IImageProcessingContext<TPixel> Scale<TPixel>(this IImageProcessingContext<TPixel> context, int targetWidth, int targetHeight, ResizeMode mode = ResizeMode.Pad, AnchorPositionMode anchor = AnchorPositionMode.Center, TPixel? backgroundColor = null) where TPixel : struct, IPixel<TPixel>
         {
-            return context.Resize(new ResizeOptions { Mode = mode, Position = anchor, Size = new SixLabors.Primitives.Size { Width = targetWidth, Height = targetHeight } });
+            context.Resize(new ResizeOptions { Mode = mode, Position = anchor, Size = new SixLabors.Primitives.Size { Width = targetWidth, Height = targetHeight } });
+            if (backgroundColor != null) context.BackgroundColor(backgroundColor.Value);
+            return context;
         }
 
         /// <summary>
@@ -175,17 +178,18 @@ namespace SkyDCore.Drawing
         /// <param name="targetHeight">指定的高度，当mode为ResizeMode.Pad时，设为0则忽略，而以令一个边为准</param>
         /// <param name="mode">
         ///     <para>缩放时采用的处理方式：</para>
-        ///     <para>BoxPad-缩小时双边长度限制，放大时不放大原图，输出的图像尺寸即为目标尺寸，可能会留空；</para>
+        ///     <para>BoxPad-缩小时双边长度限制，放大时不放大原图，输出的图像尺寸即为目标尺寸，可能会留空，可通过backgroundColor参数指定空的部分的背景颜色；</para>
         ///     <para>Crop-短边适配，长边裁剪；</para>
         ///     <para>Max-以长边为准进行适配；</para>
         ///     <para>Min-以短边为准进行适配；</para>
-        ///     <para>Pad-缩小时类似BoxPad，但如果某边传入的目标值为0则以另一边为准进行适配，放大时会填充至少一个方向到目标尺寸，输出的图像尺寸即为目标尺寸，可能会留空；</para>
+        ///     <para>Pad-缩小时类似BoxPad，但如果某边传入的目标值为0则以另一边为准进行适配，放大时会填充至少一个方向到目标尺寸，输出的图像尺寸即为目标尺寸，可能会留空，可通过backgroundColor参数指定空的部分的背景颜色；</para>
         ///     <para>Stretch-拉伸画面到目标尺寸</para>
         /// </param>
         /// <param name="anchor">当画面比图像大时，图像的停靠方位，适用于mode为ResizeMode.Pad或ResizeMode.BoxPad的情况</param>
-        public static void Scale<TPixel>(this Image<TPixel> img, int targetWidth, int targetHeight, ResizeMode mode = ResizeMode.Pad, AnchorPositionMode anchor = AnchorPositionMode.Center) where TPixel : struct, IPixel<TPixel>
+        /// <param name="backgroundColor">背景颜色，留空则为默认颜色，适用于mode为ResizeMode.Pad或ResizeMode.BoxPad的情况</param>
+        public static void Scale<TPixel>(this Image<TPixel> img, int targetWidth, int targetHeight, ResizeMode mode = ResizeMode.Pad, AnchorPositionMode anchor = AnchorPositionMode.Center, TPixel? backgroundColor = null) where TPixel : struct, IPixel<TPixel>
         {
-            img.Mutate(q => q.Scale(targetWidth, targetHeight, mode, anchor));
+            img.Mutate(q => q.Scale(targetWidth, targetHeight, mode, anchor, backgroundColor));
         }
 
         /// <summary>
@@ -216,9 +220,8 @@ namespace SkyDCore.Drawing
                         fullImg.Mutate(q =>
                         {
                             var w = fullImg.Width;
-                            q.Scale(fullImg.Width + imageDistance + img.Width, targetHeight, ResizeMode.BoxPad, AnchorPositionMode.Left);
+                            q.Scale(fullImg.Width + imageDistance + img.Width, targetHeight, ResizeMode.BoxPad, AnchorPositionMode.Left, backgroundColor);
                             q.DrawImage(new GraphicsOptions { Antialias = true }, img, new SixLabors.Primitives.Point(w - edgeDistance + imageDistance, edgeDistance));
-                            q.BackgroundColor(backgroundColor);
                         });
                     }
                 }
