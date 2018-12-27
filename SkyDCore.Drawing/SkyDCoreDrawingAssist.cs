@@ -267,57 +267,73 @@ namespace SkyDCore.Drawing
             return fullImg;
         }
 
-        ///// <summary>
-        ///// 从图像中剪裁出指定区域为新的图像
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="起始坐标">剪裁区域的左上角坐标点</param>
-        ///// <param name="剪裁尺寸">剪裁区域尺寸</param>
-        ///// <returns>剪裁后的图像</returns>
-        //public static Bitmap 剪裁图像(this Image 图像, Point 起始坐标, Size 剪裁尺寸)
-        //{
-        //    Bitmap resizedBmp = new Bitmap(剪裁尺寸.Width, 剪裁尺寸.Height);
-        //    Graphics g = Graphics.FromImage(resizedBmp);
-        //    g.DrawImage(图像, new Rectangle(0, 0, 剪裁尺寸.Width, 剪裁尺寸.Height), new Rectangle(起始坐标.X, 起始坐标.Y, 剪裁尺寸.Width, 剪裁尺寸.Height), GraphicsUnit.Pixel);
-        //    return resizedBmp;
-        //}
+        /// <summary>
+        /// 根据位置剪裁
+        /// </summary>
+        /// <param name="context">图像修改上下文</param>
+        /// <param name="targetWidth">目标宽度</param>
+        /// <param name="targetHeight">目标高度</param>
+        /// <param name="imageWidth">原图宽度</param>
+        /// <param name="imageHeight">原图高度</param>
+        /// <param name="anchor">位置锚点</param>
+        /// <param name="anchorEdgeOffset">锚点边缘偏移量</param>
+        /// <returns>图像修改上下文</returns>
+        public static IImageProcessingContext<TPixel> CropByAnchorPosition<TPixel>(this IImageProcessingContext<TPixel> context, int targetWidth, int targetHeight, int imageWidth, int imageHeight, AnchorPositionMode anchor, int anchorEdgeOffset) where TPixel : struct, IPixel<TPixel>
+        {
+            int x = anchorEdgeOffset;
+            int y = anchorEdgeOffset;
+            switch (anchor)
+            {
+                case AnchorPositionMode.Center:
+                    x = imageWidth / 2 - targetWidth / 2;
+                    y = imageHeight / 2 - targetHeight / 2;
+                    break;
+                case AnchorPositionMode.Top:
+                    x = imageWidth / 2 - targetWidth / 2;
+                    break;
+                case AnchorPositionMode.Bottom:
+                    x = imageWidth / 2 - targetWidth / 2;
+                    y = imageHeight - targetHeight - anchorEdgeOffset;
+                    break;
+                case AnchorPositionMode.Left:
+                    y = imageHeight / 2 - targetHeight / 2;
+                    break;
+                case AnchorPositionMode.Right:
+                    x = imageWidth - targetWidth - anchorEdgeOffset;
+                    y = imageHeight / 2 - targetHeight / 2;
+                    break;
+                case AnchorPositionMode.TopLeft:
+                    break;
+                case AnchorPositionMode.TopRight:
+                    x = imageWidth - targetWidth - anchorEdgeOffset;
+                    break;
+                case AnchorPositionMode.BottomRight:
+                    x = imageWidth - targetWidth - anchorEdgeOffset;
+                    y = imageHeight - targetHeight - anchorEdgeOffset;
+                    break;
+                case AnchorPositionMode.BottomLeft:
+                    y = imageHeight - targetHeight - anchorEdgeOffset;
+                    break;
+                default:
+                    break;
+            }
+            var rect = new SixLabors.Primitives.Rectangle(x, y, targetWidth, targetHeight);
+            context.Crop(rect);
+            return context;
+        }
 
-        ///// <summary>
-        ///// 从图像中剪裁出指定区域为新的图像
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="剪裁矩形">需从原图中剪裁的矩形</param>
-        ///// <returns>剪裁后的图像</returns>
-        //public static Bitmap 剪裁图像(this Image 图像, Rectangle 剪裁矩形)
-        //{
-        //    return 剪裁图像(图像, 剪裁矩形.Location, 剪裁矩形.Size);
-        //}
-
-        ///// <summary>
-        ///// 从图像中剪裁出指定区域为新的图像
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="剪裁矩形">需从原图中剪裁的矩形</param>
-        ///// <returns>剪裁后的图像</returns>
-        //public static Bitmap 剪裁图像(this Image 图像, RectangleF 剪裁矩形)
-        //{
-        //    Bitmap resizedBmp = new Bitmap((int)Math.Ceiling(剪裁矩形.Width), (int)Math.Ceiling(剪裁矩形.Height));
-        //    Graphics g = Graphics.FromImage(resizedBmp);
-        //    g.DrawImage(图像, new RectangleF(0, 0, 剪裁矩形.Width, 剪裁矩形.Height), 剪裁矩形, GraphicsUnit.Pixel);
-        //    return resizedBmp;
-        //}
-
-        ///// <summary>
-        ///// 从图像中剪裁出指定区域为新的图像，此此重载形式为居中剪裁
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="起始坐标">剪裁区域的左上角坐标点</param>
-        ///// <param name="剪裁尺寸">剪裁区域尺寸</param>
-        ///// <returns>剪裁后的图像</returns>
-        //public static Bitmap 剪裁图像(this Image 图像, Size 剪裁尺寸)
-        //{
-        //    return 剪裁图像(图像, new Point(图像.Width / 2 - 剪裁尺寸.Width / 2, 图像.Height / 2 - 剪裁尺寸.Height / 2), 剪裁尺寸);
-        //}
+        /// <summary>
+        /// 根据位置剪裁
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="targetWidth">目标宽度</param>
+        /// <param name="targetHeight">目标高度</param>
+        /// <param name="anchor">位置锚点</param>
+        /// <param name="anchorEdgeOffset">锚点边缘偏移量</param>
+        public static void CropByAnchorPosition<TPixel>(this Image<TPixel> img, int targetWidth, int targetHeight, AnchorPositionMode anchor,int anchorEdgeOffset) where TPixel : struct, IPixel<TPixel>
+        {
+            img.Mutate(q => q.CropByAnchorPosition(targetWidth, targetHeight, img.Width, img.Height, anchor, anchorEdgeOffset));
+        }
 
         ///// <summary>
         ///// 居中剪裁图像为小于或等于指定尺寸的最邻近的符合比例的尺寸，比如300*201将会返回300*200，因其符合3:2的比例。
