@@ -10,6 +10,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
 using SixLabors.ImageSharp.Formats;
+using SkyDCore.Mathematics;
 
 namespace SkyDCore.Drawing
 {
@@ -330,23 +331,42 @@ namespace SkyDCore.Drawing
         /// <param name="targetHeight">目标高度</param>
         /// <param name="anchor">位置锚点</param>
         /// <param name="anchorEdgeOffset">锚点边缘偏移量</param>
-        public static void CropByAnchorPosition<TPixel>(this Image<TPixel> img, int targetWidth, int targetHeight, AnchorPositionMode anchor,int anchorEdgeOffset) where TPixel : struct, IPixel<TPixel>
+        public static void CropByAnchorPosition<TPixel>(this Image<TPixel> img, int targetWidth, int targetHeight, AnchorPositionMode anchor, int anchorEdgeOffset) where TPixel : struct, IPixel<TPixel>
         {
             img.Mutate(q => q.CropByAnchorPosition(targetWidth, targetHeight, img.Width, img.Height, anchor, anchorEdgeOffset));
         }
 
-        ///// <summary>
-        ///// 居中剪裁图像为小于或等于指定尺寸的最邻近的符合比例的尺寸，比如300*201将会返回300*200，因其符合3:2的比例。
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="横向最大比值">最大的比例值</param>
-        ///// <param name="纵向最大比值">最大的比例值</param>
-        ///// <param name="最大比值积">纵横比例值的最大乘积</param>
-        ///// <returns>剪裁后的图像</returns>
-        //public static Bitmap 剪裁图像为邻近的符合比例的尺寸(this Image 图像, int 横向最大比值, int 纵向最大比值, int 最大比值积)
-        //{
-        //    return 剪裁图像(图像, 计算邻近的符合比例的尺寸(图像.Width, 图像.Height, 横向最大比值, 纵向最大比值, 最大比值积));
-        //}
+        /// <summary>
+        /// 居中剪裁图像为小于或等于指定尺寸的最邻近的符合比例的尺寸，比如300*201将会返回300*200，因其符合3:2的比例。
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="horizontalMaxRatioValue">最大的比例值</param>
+        /// <param name="verticalMaxRatioValue">最大的比例值</param>
+        /// <param name="maxRatioValueProduct">纵横比例值的最大乘积</param>
+        /// <returns>剪裁后的图像</returns>
+        public static void CropToApproximateRatioSize<TPixel>(this Image<TPixel> img, int horizontalMaxRatioValue, int verticalMaxRatioValue, int maxRatioValueProduct) where TPixel : struct, IPixel<TPixel>
+        {
+            var size = CalculateApproximateRatioSize(img.Width, img.Height, horizontalMaxRatioValue, verticalMaxRatioValue, maxRatioValueProduct);
+            img.CropByAnchorPosition(size.Width, size.Height, AnchorPositionMode.Center, 0);
+        }
+
+        /// <summary>
+        /// 居中剪裁图像为指定比例
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="horizontalRatioValue">横向比例</param>
+        /// <param name="verticalRatioValue">纵向比例</param>
+        public static void CropToRatioSize<TPixel>(this Image<TPixel> img, int horizontalRatioValue, int verticalRatioValue) where TPixel : struct, IPixel<TPixel>
+        {
+            var w = img.Width;
+            var h = (img.Width * 1.0 / horizontalRatioValue * verticalRatioValue).FloorToInt();
+            if (h > img.Height)
+            {
+                w = (img.Height * 1.0 / verticalRatioValue * horizontalRatioValue).FloorToInt();
+                h = img.Height;
+            }
+            img.CropByAnchorPosition(w, h, AnchorPositionMode.Center, 0);
+        }
 
         ///// <summary>
         ///// 为图像添加水印，并生成新的图像
@@ -905,7 +925,7 @@ namespace SkyDCore.Drawing
         /// <param name="width">宽度</param>
         /// <param name="height">高度</param>
         /// <returns>宽高比例</returns>
-        public static System.Drawing.Size calculateRatio(int width, int height)
+        public static System.Drawing.Size CalculateRatio(int width, int height)
         {
             var n = CalculateGCD(width, height);
             return new System.Drawing.Size(width / n, height / n);
@@ -928,7 +948,7 @@ namespace SkyDCore.Drawing
         /// <param name="height">指定高度</param>
         /// <param name="maxRatioValue">最大的比例值</param>
         /// <returns>比例</returns>
-        public static System.Drawing.Size? calculateRatio(int width, int height, int maxRatioValue)
+        public static System.Drawing.Size? CalculateRatio(int width, int height, int maxRatioValue)
         {
             for (int i = 1; i <= maxRatioValue; i++)
             {
