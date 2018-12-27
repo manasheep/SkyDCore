@@ -13,36 +13,6 @@ using SixLabors.ImageSharp.Formats;
 
 namespace SkyDCore.Drawing
 {
-    /// <summary>
-    /// 缩放图片时所使用的缩放方式
-    /// </summary>
-    public enum ScaleType
-    {
-        [Description("保持长宽比")]
-        KeepRatio,
-        [Description("强制拉伸")]
-        ForceStretch,
-        [Description("强制裁剪")]
-        ForceCut
-    }
-
-    /// <summary>
-    /// 用于设置水印的覆盖方位，可复选
-    /// </summary>
-    [Flags]
-    public enum AlignType
-    {
-        [Description("上")]
-        Top = 1,
-        [Description("下")]
-        Bottom = 2,
-        [Description("左")]
-        Left = 4,
-        [Description("右")]
-        Right = 8,
-        [Description("中")]
-        Center = 16
-    }
 
     /// <summary>
     /// 绘图辅助类
@@ -96,291 +66,203 @@ namespace SkyDCore.Drawing
         {
             MemoryStream ms = new MemoryStream();
             byte[] imagedata = null;
-            img.Save(ms, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder() { Quality=quality });
+            img.SaveAsJpeg(ms, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder() { Quality = quality });
             imagedata = ms.GetBuffer();
             ms.Close();
             return imagedata;
         }
 
-        ///// <summary>
-        ///// 转换为字节数组
-        ///// </summary>
-        ///// <param name="图像">图像</param>
-        ///// <param name="图像质量">100以内，数值越高质量越高</param>
-        ///// <returns>字节数组</returns>
-        //public static byte[] 转换为字节数组(this Image 图像, long 图像质量)
-        //{
-        //    var ecd = GetEncoder(ImageFormat.Jpeg);
-        //    System.Drawing.Imaging.Encoder myEncoder = System.Drawing.Imaging.Encoder.Quality;
-        //    EncoderParameters myEncoderParameters = new EncoderParameters(1);
-        //    EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, 图像质量);
-        //    myEncoderParameters.Param[0] = myEncoderParameter;
-        //    MemoryStream ms = new MemoryStream();
-        //    byte[] imagedata = null;
-        //    图像.Save(ms, ecd, myEncoderParameters);
-        //    imagedata = ms.GetBuffer();
-        //    ms.Close();
-        //    return imagedata;
-        //}
+        /// <summary>
+        /// 从文件读取图像，不会持续占用文件，原文件可被删改
+        /// </summary>
+        /// <param name="filePath">图像文件路径</param>
+        /// <param name="decoder">解码器，例如SixLabors.ImageSharp.Formats.Png.PngDecoder，留空则自动适配</param>
+        /// <returns>图像</returns>
+        public static Image<Rgba32> LoadImageFromFile(string filePath, IImageDecoder decoder = null)
+        {
+            return decoder == null ? Image.Load(filePath) : Image.Load(filePath, decoder);
+        }
 
-        ///// <summary>
-        ///// 转换为字节数组
-        ///// </summary>
-        ///// <param name="图像">图像</param>
-        ///// <returns>字节数组</returns>
-        //public static byte[] 转换为字节数组(this Bitmap 图像)
-        //{
-        //    var data = 图像.LockBits(new Rectangle(0, 0, 图像.Width, 图像.Height), ImageLockMode.ReadOnly,
-        //        图像.PixelFormat);
-        //    // Get the address of the first line.
-        //    IntPtr ptr = data.Scan0;
-        //    // Declare an array to hold the bytes of the bitmap.
-        //    int bytes = data.Stride * 图像.Height;
-        //    byte[] rgbValues = new byte[bytes];
-        //    // Copy the RGB values into the array.
-        //    System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
-        //    图像.UnlockBits(data);
-        //    return rgbValues;
-        //}
+        /// <summary>
+        /// 将图像保存为JPEG格式文件
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="filePath">存储路径</param>
+        /// <param name="quality">JPEG编码质量，取值0-100，通常使用75</param>
+        public static void SaveAsJpegToFile<TPixel>(this Image<TPixel> img, string filePath, int quality) where TPixel : struct, IPixel<TPixel>
+        {
+            img.Save(filePath, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder() { Quality = quality });
+        }
 
-        ///// <summary>
-        ///// 转换图像为24位图像
-        ///// </summary>
-        ///// <param name="原图">原图</param>
-        ///// <param name="背景颜色">使用背景颜色</param>
-        ///// <returns>新的24位彩色图</returns>
-        //public static Bitmap 转换为24位彩色图像文件(this Image 原图, Color 背景颜色 = default(Color))
-        //{
-        //    var bnew = new Bitmap(原图.Width, 原图.Height, PixelFormat.Format24bppRgb);
-        //    Graphics g = Graphics.FromImage(bnew);
-        //    g.Clear(背景颜色);
-        //    g.DrawImage(原图, 0, 0, 原图.Width, 原图.Height);
-        //    g.Dispose();
-        //    return bnew;
-        //}
+        /// <summary>
+        /// 将图像保存为JPEG格式文件
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="stream">可写入的流</param>
+        /// <param name="quality">JPEG编码质量，取值0-100，通常使用75</param>
+        public static void SaveAsJpegToStream<TPixel>(this Image<TPixel> img, Stream stream, int quality) where TPixel : struct, IPixel<TPixel>
+        {
+            img.Save(stream, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder() { Quality = quality });
+        }
 
-        ///// <summary>
-        ///// 使用文件流的方式读取图像，不会持续占用文件，原文件可被删改
-        ///// </summary>
-        ///// <param name="文件路径">图像文件路径</param>
-        ///// <returns>图像</returns>
-        //public static Image 读取图像自文件(string 文件路径)
-        //{
-        //    using (var fs = new FileStream(文件路径, FileMode.Open, FileAccess.Read))
-        //    {
-        //        return Image.FromStream(fs);
-        //    }
-        //}
+        /// <summary>
+        /// 将图像保存为PNG格式文件
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="filePath">存储路径</param>
+        public static void SaveAsPngToFile<TPixel>(this Image<TPixel> img, string filePath) where TPixel : struct, IPixel<TPixel>
+        {
+            img.Save(filePath, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+        }
 
-        ///// <summary>
-        ///// 回调
-        ///// </summary>
-        ///// <returns></returns>
-        //public static bool 回调()
-        //{
-        //    return false;
-        //}
-
-        ///// <summary>
-        ///// 将图像保存为JPG格式文件
-        ///// </summary>
-        ///// <param name="图像">传入图像</param>
-        ///// <param name="保存文件路径">存储路径</param>
-        ///// <param name="图像质量">一个0到100之间的整数值，数值越大则图像质量越高</param>
-        //public static void 保存为JPG文件(this Image 图像, string 保存文件路径, long 图像质量)
-        //{
-        //    var ecd = GetEncoder(ImageFormat.Jpeg);
-        //    System.Drawing.Imaging.Encoder myEncoder = System.Drawing.Imaging.Encoder.Quality;
-        //    EncoderParameters myEncoderParameters = new EncoderParameters(1);
-        //    EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, 图像质量);
-        //    myEncoderParameters.Param[0] = myEncoderParameter;
-        //    图像.Save(保存文件路径, ecd, myEncoderParameters);
-        //}
-
-        ///// <summary>
-        ///// 将图像保存为JPG格式文件
-        ///// </summary>
-        ///// <param name="图像">传入图像</param>
-        ///// <param name="写入流">写入流</param>
-        ///// <param name="图像质量">一个0到100之间的整数值，数值越大则图像质量越高</param>
-        //public static void 保存为JPG文件(this Image 图像, Stream 写入流, long 图像质量)
-        //{
-        //    var ecd = GetEncoder(ImageFormat.Jpeg);
-        //    System.Drawing.Imaging.Encoder myEncoder = System.Drawing.Imaging.Encoder.Quality;
-        //    EncoderParameters myEncoderParameters = new EncoderParameters(1);
-        //    EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, 图像质量);
-        //    myEncoderParameters.Param[0] = myEncoderParameter;
-        //    图像.Save(写入流, ecd, myEncoderParameters);
-        //}
-
-        ///// <summary>
-        ///// 将图像保存为PNG格式文件
-        ///// </summary>
-        ///// <param name="图像">传入图像</param>
-        ///// <param name="保存文件路径">存储路径</param>
-        //public static void 保存为PNG文件(this Image 图像, string 保存文件路径)
-        //{
-        //    图像.Save(保存文件路径, ImageFormat.Png);
-        //}
-
-        ///// <summary>
-        ///// 将图像保存为PNG格式文件
-        ///// </summary>
-        ///// <param name="图像">传入图像</param>
-        ///// <param name="写入流">写入流</param>
-        //public static void 保存为PNG文件(this Image 图像, Stream 写入流)
-        //{
-        //    图像.Save(写入流, ImageFormat.Png);
-        //}
-
-        //private static ImageCodecInfo GetEncoder(ImageFormat format)
-        //{
-        //    ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
-        //    foreach (ImageCodecInfo codec in codecs)
-        //    {
-        //        if (codec.FormatID == format.Guid)
-        //        {
-        //            return codec;
-        //        }
-        //    }
-        //    return null;
-        //}
-
-        //private static void 图像旋转(Image 图像, ref int 宽度, ref int 高度, int 方向)
-        //{
-        //    int ow = 宽度;
-        //    switch (方向)
-        //    {
-        //        case 2:
-        //            图像.RotateFlip(RotateFlipType.RotateNoneFlipX);//horizontal flip
-        //            break;
-        //        case 3:
-        //            图像.RotateFlip(RotateFlipType.Rotate180FlipNone);//right-top
-        //            break;
-        //        case 4:
-        //            图像.RotateFlip(RotateFlipType.RotateNoneFlipY);//vertical flip
-        //            break;
-        //        case 5:
-        //            图像.RotateFlip(RotateFlipType.Rotate90FlipX);
-        //            break;
-        //        case 6:
-        //            图像.RotateFlip(RotateFlipType.Rotate90FlipNone);//right-top
-        //            宽度 = 高度;
-        //            高度 = ow;
-        //            break;
-        //        case 7:
-        //            图像.RotateFlip(RotateFlipType.Rotate270FlipX);
-        //            break;
-        //        case 8:
-        //            图像.RotateFlip(RotateFlipType.Rotate270FlipNone);//left-bottom
-        //            宽度 = 高度;
-        //            高度 = ow;
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //}
+        /// <summary>
+        /// 将图像保存为PNG格式文件
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="stream">可写入的流</param>
+        public static void SaveAsPngToStream<TPixel>(this Image<TPixel> img, Stream stream) where TPixel : struct, IPixel<TPixel>
+        {
+            img.Save(stream, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+        }
 
 
-        //public static Image 读取图片并根据Exif信息自动旋转(string 图像路径)
-        //{
-        //    var img = 读取图像自文件(图像路径);
-        //    try
-        //    {
-        //        var exif = new Exif(图像路径);
-        //        var w = img.Width;
-        //        var h = img.Height;
-        //        图像旋转(img, ref w, ref h, exif.orientationNumber);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        e.Trace();
-        //    }
-        //    return img;
-        //}
+        /// <summary>
+        /// 根据Exif信息自动旋转
+        /// </summary>
+        /// <param name="context">图像修改上下文</param>
+        /// <returns>图像修改上下文</returns>
+        public static IImageProcessingContext<TPixel> AutoRotateByExif<TPixel>(this IImageProcessingContext<TPixel> context) where TPixel : struct, IPixel<TPixel>
+        {
+            return context.AutoOrient();
+        }
 
-        ///// <summary>
-        ///// 将图像放大或缩小，默认采用高质量缩放
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="指定宽度">指定的宽度，为0则不约束</param>
-        ///// <param name="指定高度">指定的高度，为0则不约束</param>
-        ///// <param name="缩放方式">缩放时采用的处理方式</param>
-        ///// <returns>缩放后的图像</returns>
-        //public static Bitmap 缩放图像(this Image 图像, int 指定宽度, int 指定高度, ScaleType 缩放方式)
-        //{
-        //    return 缩放图像(图像, 指定宽度, 指定高度, 缩放方式, InterpolationMode.HighQualityBicubic, SmoothingMode.HighQuality, CompositingQuality.HighQuality);
-        //}
+        /// <summary>
+        /// 根据Exif信息自动旋转
+        /// </summary>
+        /// <param name="img">图像</param>
+        public static void AutoRotateByExif<TPixel>(this Image<TPixel> img) where TPixel : struct, IPixel<TPixel>
+        {
+            img.Mutate(q => q.AutoRotateByExif());
+        }
 
-        ///// <summary>
-        ///// 将图像放大或缩小
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="指定宽度">指定的宽度，为0则保持原始值</param>
-        ///// <param name="指定高度">指定的高度，为0则保持原始值</param>
-        ///// <param name="缩放方式">缩放时采用的处理方式</param>
-        ///// <param name="插值算法">插值算法</param>
-        ///// <param name="平滑模式">平滑模式</param>
-        ///// <param name="合成质量">合成质量</param>
-        ///// <returns>缩放后的图像</returns>
-        //public static Bitmap 缩放图像(this Image 图像, int 指定宽度, int 指定高度, ScaleType 缩放方式, InterpolationMode 插值算法, SmoothingMode 平滑模式, CompositingQuality 合成质量)
-        //{
-        //    var s = 计算缩放尺寸(缩放方式, 图像.Width, 图像.Height, 指定宽度, 指定高度);
-        //    var img = 缩放图像(图像, s, 插值算法, 平滑模式, 合成质量);
-        //    if (缩放方式 == ScaleType.ForceCut)
-        //    {
-        //        var tw = 指定宽度 == 0 ? 图像.Width : 指定宽度;
-        //        var th = 指定高度 == 0 ? 图像.Height : 指定高度;
-        //        img = 剪裁图像(img, new Point(img.Width / 2 - tw / 2, img.Height / 2 - th / 2), new Size(tw, th));
-        //    }
-        //    return img;
-        //}
+        /// <summary>
+        /// 将图像放大或缩小
+        /// </summary>
+        /// <param name="context">图像修改上下文</param>
+        /// <param name="targetWidth">指定的宽度，当mode为ResizeMode.Pad时，设为0则忽略，而以令一个边为准</param>
+        /// <param name="targetHeight">指定的高度，当mode为ResizeMode.Pad时，设为0则忽略，而以令一个边为准</param>
+        /// <param name="mode">
+        ///     <para>缩放时采用的处理方式：</para>
+        ///     <para>BoxPad-缩小时双边长度限制，放大时不放大原图，输出的图像尺寸即为目标尺寸，可能会留空；</para>
+        ///     <para>Crop-短边适配，长边裁剪；</para>
+        ///     <para>Max-以长边为准进行适配；</para>
+        ///     <para>Min-以短边为准进行适配；</para>
+        ///     <para>Pad-缩小时类似BoxPad，但如果某边传入的目标值为0则以另一边为准进行适配，放大时会填充至少一个方向到目标尺寸，输出的图像尺寸即为目标尺寸，可能会留空；</para>
+        ///     <para>Stretch-拉伸画面到目标尺寸</para>
+        /// </param>
+        /// <param name="anchor">当画面比图像大时，图像的停靠方位，适用于mode为ResizeMode.Pad或ResizeMode.BoxPad的情况</param>
+        /// <returns>图像修改上下文</returns>
+        public static IImageProcessingContext<TPixel> Scale<TPixel>(this IImageProcessingContext<TPixel> context, int targetWidth, int targetHeight, ResizeMode mode = ResizeMode.Pad, AnchorPositionMode anchor = AnchorPositionMode.Center) where TPixel : struct, IPixel<TPixel>
+        {
+            return context.Resize(new ResizeOptions { Mode = mode, Position = anchor, Size = new SixLabors.Primitives.Size { Width = targetWidth, Height = targetHeight } });
+        }
 
-        ///// <summary>
-        ///// 将图像调整到指定尺寸
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="缩放尺寸">目标尺寸</param>
-        ///// <param name="插值算法">插值算法</param>
-        ///// <param name="平滑模式">平滑模式</param>
-        ///// <param name="合成质量">合成质量</param>
-        ///// <returns>调整后的图像</returns>
-        //public static Bitmap 缩放图像(this Image 图像, Size 缩放尺寸, InterpolationMode 插值算法, SmoothingMode 平滑模式, CompositingQuality 合成质量)
-        //{
-        //    Bitmap resizedBmp = new Bitmap(缩放尺寸.Width, 缩放尺寸.Height);
-        //    Graphics g = Graphics.FromImage(resizedBmp);
-        //    g.InterpolationMode = 插值算法;
-        //    g.SmoothingMode = 平滑模式;
-        //    g.CompositingQuality = 合成质量;
-        //    g.DrawImage(图像, new Rectangle(0, 0, 缩放尺寸.Width, 缩放尺寸.Height), new Rectangle(0, 0, 图像.Width, 图像.Height), GraphicsUnit.Pixel);
-        //    return resizedBmp;
-        //}
+        /// <summary>
+        /// 将图像放大或缩小
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="targetWidth">指定的宽度，当mode为ResizeMode.Pad时，设为0则忽略，而以令一个边为准</param>
+        /// <param name="targetHeight">指定的高度，当mode为ResizeMode.Pad时，设为0则忽略，而以令一个边为准</param>
+        /// <param name="mode">
+        ///     <para>缩放时采用的处理方式：</para>
+        ///     <para>BoxPad-缩小时双边长度限制，放大时不放大原图，输出的图像尺寸即为目标尺寸，可能会留空；</para>
+        ///     <para>Crop-短边适配，长边裁剪；</para>
+        ///     <para>Max-以长边为准进行适配；</para>
+        ///     <para>Min-以短边为准进行适配；</para>
+        ///     <para>Pad-缩小时类似BoxPad，但如果某边传入的目标值为0则以另一边为准进行适配，放大时会填充至少一个方向到目标尺寸，输出的图像尺寸即为目标尺寸，可能会留空；</para>
+        ///     <para>Stretch-拉伸画面到目标尺寸</para>
+        /// </param>
+        /// <param name="anchor">当画面比图像大时，图像的停靠方位，适用于mode为ResizeMode.Pad或ResizeMode.BoxPad的情况</param>
+        public static void Scale<TPixel>(this Image<TPixel> img, int targetWidth, int targetHeight, ResizeMode mode = ResizeMode.Pad, AnchorPositionMode anchor = AnchorPositionMode.Center) where TPixel : struct, IPixel<TPixel>
+        {
+            img.Mutate(q => q.Scale(targetWidth, targetHeight, mode, anchor));
+        }
 
-        ///// <summary>
-        ///// 将多个图像排列拼接成一个大图
-        ///// </summary>
-        ///// <param name="最终宽度">输出图宽度</param>
-        ///// <param name="最终高度">输出图高度</param>
-        ///// <param name="是否为横向拼接">否则为纵向</param>
-        ///// <param name="待拼接图像文件路径">待拼接图像文件数组</param>
-        ///// <returns>大图</returns>
-        //public static Bitmap 拼接图像(int 最终宽度, int 最终高度, bool 是否为横向拼接, params string[] 待拼接图像文件路径)
-        //{
-        //    Bitmap bmp = new Bitmap(最终宽度, 最终高度);
-        //    Graphics g = Graphics.FromImage(bmp);
-        //    var x = 0;
-        //    var y = 0;
-        //    foreach (var f in 待拼接图像文件路径)
-        //    {
-        //        using (var img = 读取图像自文件(f))
-        //        {
-        //            g.DrawImage(img, x, y, img.Width, img.Height);
-        //            if (是否为横向拼接) x += img.Width;
-        //            else y += img.Height;
-        //        }
-        //    }
-        //    return bmp;
-        //}
+        /// <summary>
+        /// 横向拼接多个图片，组成一个大图
+        /// </summary>
+        /// <param name="targetHeight">输出图片的高度</param>
+        /// <param name="imageDistance">图像之间的距离</param>
+        /// <param name="edgeDistance">图像与画框的边距</param>
+        /// <param name="backgroundColor">背景颜色</param>
+        /// <param name="imageFilePathArray">待拼接图像文件路径数组</param>
+        /// <returns>拼接好的图片</returns>
+        public static Image<Rgba32> HorizontalSpliceImages(int targetHeight, int imageDistance, int edgeDistance, Rgba32 backgroundColor, params string[] imageFilePathArray)
+        {
+            Image<Rgba32> fullImg = null;
+            for (int i = 0; i < imageFilePathArray.Length; i++)
+            {
+                using (var img = Image.Load(imageFilePathArray[i]))
+                {
+                    if (i == 0)
+                    {
+                        img.Mutate(t => t.AutoRotateByExif().Scale(0, targetHeight - edgeDistance * 2, ResizeMode.Pad, AnchorPositionMode.Center));
+                        fullImg = new Image<Rgba32>(new Configuration(), img.Width + edgeDistance * 2, targetHeight, backgroundColor);
+                        fullImg.Mutate(q => q.DrawImage(new GraphicsOptions { Antialias = true }, img, new SixLabors.Primitives.Point(edgeDistance, edgeDistance)));
+                    }
+                    else
+                    {
+                        img.Mutate(t => t.AutoRotateByExif().Scale(0, targetHeight - edgeDistance * 2, ResizeMode.Pad, AnchorPositionMode.Center));
+                        fullImg.Mutate(q =>
+                        {
+                            var w = fullImg.Width;
+                            q.Scale(fullImg.Width + imageDistance + img.Width, targetHeight, ResizeMode.BoxPad, AnchorPositionMode.Left);
+                            q.DrawImage(new GraphicsOptions { Antialias = true }, img, new SixLabors.Primitives.Point(w - edgeDistance + imageDistance, edgeDistance));
+                            q.BackgroundColor(backgroundColor);
+                        });
+                    }
+                }
+            }
+            return fullImg;
+        }
+
+        /// <summary>
+        /// 纵向拼接多个图片，组成一个大图
+        /// </summary>
+        /// <param name="targetWidth">输出图片的宽度</param>
+        /// <param name="imageDistance">图像之间的距离</param>
+        /// <param name="edgeDistance">图像与画框的边距</param>
+        /// <param name="backgroundColor">背景颜色</param>
+        /// <param name="imageFilePathArray">待拼接图像文件路径数组</param>
+        /// <returns>拼接好的图片</returns>
+        public static Image<Rgba32> VerticalSpliceImages(int targetWidth, int imageDistance, int edgeDistance, Rgba32 backgroundColor, params string[] imageFilePathArray)
+        {
+            Image<Rgba32> fullImg = null;
+            for (int i = 0; i < imageFilePathArray.Length; i++)
+            {
+                using (var img = Image.Load(imageFilePathArray[i]))
+                {
+                    if (i == 0)
+                    {
+                        img.Mutate(t => t.AutoRotateByExif().Scale(targetWidth - edgeDistance * 2, 0, ResizeMode.Pad, AnchorPositionMode.Center));
+                        fullImg = new Image<Rgba32>(new Configuration(), targetWidth, img.Height + edgeDistance * 2, backgroundColor);
+                        fullImg.Mutate(q => q.DrawImage(new GraphicsOptions { Antialias = true }, img, new SixLabors.Primitives.Point(edgeDistance, edgeDistance)));
+                    }
+                    else
+                    {
+                        img.Mutate(t => t.AutoRotateByExif().Scale(targetWidth - edgeDistance * 2, 0, ResizeMode.Pad, AnchorPositionMode.Center));
+                        fullImg.Mutate(q =>
+                        {
+                            var h = fullImg.Height;
+                            q.Scale(targetWidth, fullImg.Height + imageDistance + img.Height, ResizeMode.BoxPad, AnchorPositionMode.Top);
+                            q.DrawImage(new GraphicsOptions { Antialias = true }, img, new SixLabors.Primitives.Point(edgeDistance, h - edgeDistance + imageDistance));
+                            q.BackgroundColor(backgroundColor);
+                        });
+                    }
+                }
+            }
+            return fullImg;
+        }
 
         ///// <summary>
         ///// 从图像中剪裁出指定区域为新的图像
@@ -446,57 +328,6 @@ namespace SkyDCore.Drawing
         //{
         //    return 剪裁图像(图像, 计算邻近的符合比例的尺寸(图像.Width, 图像.Height, 横向最大比值, 纵向最大比值, 最大比值积));
         //}
-
-        /// <summary>
-        /// 计算应产生的图像缩放尺寸
-        /// </summary>
-        /// <param name="type">缩放时采用的处理方式</param>
-        /// <param name="originalWidth">源图像宽度</param>
-        /// <param name="originalHeight">源图像高度</param>
-        /// <param name="targetWidth">指定的宽度，为0则保持原始值</param>
-        /// <param name="targetHeight">指定的高度，为0则保持原始值</param>
-        /// <returns>缩放后的尺寸</returns>
-        public static System.Drawing.Size CalculateScaleSize(ScaleType type, int originalWidth, int originalHeight, int targetWidth, int targetHeight)
-        {
-            var w = originalWidth;
-            var h = originalHeight;
-            var tw = targetWidth == 0 ? w : targetWidth;
-            var th = targetHeight == 0 ? h : targetHeight;
-            switch (type)
-            {
-                case ScaleType.KeepRatio:
-                    if (tw * 1.00 / w < th * 1.00 / h)
-                    {
-                        h = (int)(tw * 1.00 / w * h);
-                        w = tw;
-                    }
-                    else
-                    {
-                        w = (int)(th * 1.00 / h * w);
-                        h = th;
-                    }
-                    break;
-                case ScaleType.ForceStretch:
-                    w = tw;
-                    h = th;
-                    break;
-                case ScaleType.ForceCut:
-                    if (tw * 1.00 / w > th * 1.00 / h)
-                    {
-                        h = (int)(tw * 1.00 / w * h);
-                        w = tw;
-                    }
-                    else
-                    {
-                        w = (int)(th * 1.00 / h * w);
-                        h = th;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            return new System.Drawing.Size(w, h);
-        }
 
         ///// <summary>
         ///// 为图像添加水印，并生成新的图像
