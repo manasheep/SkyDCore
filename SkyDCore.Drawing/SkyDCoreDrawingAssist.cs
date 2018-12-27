@@ -71,16 +71,32 @@ namespace SkyDCore.Drawing
         }
 
         /// <summary>
-        /// 转换为字节数组
+        /// 转换为图像格式的字节数组
         /// </summary>
         /// <param name="img">图像</param>
-        /// <param name="输出图像类型">输出图像字节数组的数据类型</param>
+        /// <param name="encoder">编码器，留空则使用默认的 SixLabors.ImageSharp.Formats.Png.PngEncoder 类输出PNG格式图像</param>
         /// <returns>字节数组</returns>
         public static byte[] ToByteArray<TPixel>(this Image<TPixel> img, IImageEncoder encoder = null) where TPixel : struct, IPixel<TPixel>
         {
             MemoryStream ms = new MemoryStream();
             byte[] imagedata = null;
             img.Save(ms, encoder ?? new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+            imagedata = ms.GetBuffer();
+            ms.Close();
+            return imagedata;
+        }
+
+        /// <summary>
+        /// 转换为JPEG图像格式的字节数组
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="quality">JPEG编码质量，取值0-100，通常使用75</param>
+        /// <returns>字节数组</returns>
+        public static byte[] ToByteArray<TPixel>(this Image<TPixel> img, int quality) where TPixel : struct, IPixel<TPixel>
+        {
+            MemoryStream ms = new MemoryStream();
+            byte[] imagedata = null;
+            img.Save(ms, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder() { Quality=quality });
             imagedata = ms.GetBuffer();
             ms.Close();
             return imagedata;

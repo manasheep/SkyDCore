@@ -6,7 +6,7 @@
 
 ## 依赖项
 
-- SixLabors.ImageSharp
-  [https://github.com/SixLabors/ImageSharp](https://github.com/SixLabors/ImageSharp)
+- SixLabors.ImageSharp  
+  [https://github.com/SixLabors/ImageSharp](https://github.com/SixLabors/ImageSharp)  
   Nuget引入：SixLabors.ImageSharp.Drawing 1.0.0-beta0005 （需要打开“包括预发行版”选项）
 
