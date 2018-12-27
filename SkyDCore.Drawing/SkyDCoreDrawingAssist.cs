@@ -5,6 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.ComponentModel;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.Primitives;
+using SixLabors.ImageSharp.Formats;
 
 namespace SkyDCore.Drawing
 {
@@ -45,65 +50,41 @@ namespace SkyDCore.Drawing
     public static class SkyDCoreDrawingAssist
     {
 
-        ///// <summary>
-        ///// 判断图片的PixelFormat是否为索引格式，因为对索引格式图像直接处理通常会引发异常“无法从带有索引像素格式的图像创建graphics对象”，这种情况应该使用“创建副本”方法为其创建个非索引格式的副本，再进行操作。
-        ///// </summary>
-        ///// <param name="图像像素格式">原图片的PixelFormat</param>
-        ///// <returns>是否为索引格式</returns>
-        //public static bool 判断是否为索引格式(this PixelFormat 图像像素格式)
-        //{
-        //    return 图像像素格式.IsIn(PixelFormat.Undefined, PixelFormat.DontCare, PixelFormat.Format16bppArgb1555,
-        //        PixelFormat.Format1bppIndexed, PixelFormat.Format4bppIndexed, PixelFormat.Format8bppIndexed);
-        //}
+        /// <summary>
+        /// 转换为图像
+        /// </summary>
+        /// <param name="byteArray">图像数据字节数组</param>
+        /// <returns>图像</returns>
+        public static Image<Rgba32> ConvertToImage(this byte[] byteArray)
+        {
+            return Image.Load(byteArray);
+        }
 
-        ///// <summary>
-        ///// 判断图片的PixelFormat是否为索引格式，因为对索引格式图像直接处理通常会引发异常“无法从带有索引像素格式的图像创建graphics对象”
-        ///// </summary>
-        ///// <param name="图像">原图片</param>
-        ///// <returns>是否为索引格式</returns>
-        //public static bool 判断是否为索引格式(this Image 图像)
-        //{
-        //    return 判断是否为索引格式(图像.PixelFormat);
-        //}
+        /// <summary>
+        /// base64编码的文本转为图像
+        /// </summary>
+        /// <param name="basestr">base64字符串</param>
+        /// <returns>图像</returns>
+        public static Image<Rgba32> ConvertBase64StringToImage(string base64String)
+        {
+            return base64String.ConvertBase64StringToByteArray().ConvertToImage();
+        }
 
-        ///// <summary>
-        ///// 转换为图像
-        ///// </summary>
-        ///// <param name="图像数据字节数组">图像数据字节数组</param>
-        ///// <returns>图像</returns>
-        //public static Image 转换为图像(this byte[] 图像数据字节数组)
-        //{
-        //    var ms = new MemoryStream(图像数据字节数组);
-        //    var img = Image.FromStream(ms);
-        //    ms.Close();
-        //    return img;
-        //}
-
-        ///// <summary>
-        ///// base64编码的文本 转为   图片
-        ///// </summary>
-        ///// <param name="basestr">base64字符串</param>
-        ///// <returns>转换后的Bitmap对象</returns>
-        //public static Image 转换Base64字符串为图像(string Base64字符串)
-        //{
-        //    return Base64字符串.ConvertBase64StringToByteArray().转换为图像();
-        //}
-
-        ///// <summary>
-        ///// 转换为字节数组
-        ///// </summary>
-        ///// <param name="图像">图像</param>
-        ///// <param name="输出图像类型">输出图像字节数组的数据类型</param>
-        ///// <returns>字节数组</returns>
-        //public static byte[] 转换为字节数组(this Image 图像, ImageFormat 输出图像类型)
-        //{
-        //    MemoryStream ms = new MemoryStream();
-        //    byte[] imagedata = null;
-        //    图像.Save(ms, 输出图像类型);
-        //    imagedata = ms.GetBuffer();
-        //    ms.Close();
-        //    return imagedata;
-        //}
+        /// <summary>
+        /// 转换为字节数组
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="输出图像类型">输出图像字节数组的数据类型</param>
+        /// <returns>字节数组</returns>
+        public static byte[] ToByteArray<TPixel>(this Image<TPixel> img, IImageEncoder encoder = null) where TPixel : struct, IPixel<TPixel>
+        {
+            MemoryStream ms = new MemoryStream();
+            byte[] imagedata = null;
+            img.Save(ms, encoder ?? new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+            imagedata = ms.GetBuffer();
+            ms.Close();
+            return imagedata;
+        }
 
         ///// <summary>
         ///// 转换为字节数组
@@ -459,7 +440,7 @@ namespace SkyDCore.Drawing
         /// <param name="targetWidth">指定的宽度，为0则保持原始值</param>
         /// <param name="targetHeight">指定的高度，为0则保持原始值</param>
         /// <returns>缩放后的尺寸</returns>
-        public static Size CalculateScaleSize(ScaleType type, int originalWidth, int originalHeight, int targetWidth, int targetHeight)
+        public static System.Drawing.Size CalculateScaleSize(ScaleType type, int originalWidth, int originalHeight, int targetWidth, int targetHeight)
         {
             var w = originalWidth;
             var h = originalHeight;
@@ -498,7 +479,7 @@ namespace SkyDCore.Drawing
                 default:
                     break;
             }
-            return new Size(w, h);
+            return new System.Drawing.Size(w, h);
         }
 
         ///// <summary>
@@ -954,7 +935,7 @@ namespace SkyDCore.Drawing
         //    return o;
         //}
 
-        public static bool 验证矩形区域是否包含坐标点(this Rectangle 矩形, Point 坐标点)
+        public static bool 验证矩形区域是否包含坐标点(this System.Drawing.Rectangle 矩形, System.Drawing.Point 坐标点)
         {
             return 坐标点.X >= 矩形.Left && 坐标点.X <= 矩形.Right && 坐标点.Y >= 矩形.Top && 坐标点.Y <= 矩形.Bottom;
         }
@@ -1058,10 +1039,10 @@ namespace SkyDCore.Drawing
         /// <param name="width">宽度</param>
         /// <param name="height">高度</param>
         /// <returns>宽高比例</returns>
-        public static Size calculateRatio(int width, int height)
+        public static System.Drawing.Size calculateRatio(int width, int height)
         {
             var n = CalculateGCD(width, height);
-            return new Size(width / n, height / n);
+            return new System.Drawing.Size(width / n, height / n);
         }
 
         ///// <summary>
@@ -1081,7 +1062,7 @@ namespace SkyDCore.Drawing
         /// <param name="height">指定高度</param>
         /// <param name="maxRatioValue">最大的比例值</param>
         /// <returns>比例</returns>
-        public static Size? calculateRatio(int width, int height, int maxRatioValue)
+        public static System.Drawing.Size? calculateRatio(int width, int height, int maxRatioValue)
         {
             for (int i = 1; i <= maxRatioValue; i++)
             {
@@ -1089,7 +1070,7 @@ namespace SkyDCore.Drawing
                 {
                     if (width * 1.00 / i == height * 1.00 / j)
                     {
-                        return new Size(i, j);
+                        return new System.Drawing.Size(i, j);
                     }
                 }
             }
@@ -1116,7 +1097,7 @@ namespace SkyDCore.Drawing
         /// <param name="verticalMaxRatioValue">最大的比例值</param>
         /// <param name="maxRatioValueProduct">纵横比例值的最大乘积</param>
         /// <returns>邻近比例尺寸</returns>
-        public static Size CalculateApproximateRatioSize(int width, int height, int horizontalMaxRatioValue, int verticalMaxRatioValue, int maxRatioValueProduct)
+        public static System.Drawing.Size CalculateApproximateRatioSize(int width, int height, int horizontalMaxRatioValue, int verticalMaxRatioValue, int maxRatioValueProduct)
         {
             int offset = Int32.MaxValue;
             int ow = 0;
@@ -1145,7 +1126,7 @@ namespace SkyDCore.Drawing
                 }
             }
 
-            return new Size(ow, oh);
+            return new System.Drawing.Size(ow, oh);
         }
     }
 }
