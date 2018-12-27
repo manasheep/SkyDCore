@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyDCore", "SkyDCore\SkyDCore.csproj", "{4BCA45A4-2D4D-4580-904D-0DA0438A8687}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkyDCore", "SkyDCore\SkyDCore.csproj", "{4BCA45A4-2D4D-4580-904D-0DA0438A8687}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyDCore.Drawing", "SkyDCore.Drawing\SkyDCore.Drawing.csproj", "{84F702C5-D9C8-4203-A913-8191A769806D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{4BCA45A4-2D4D-4580-904D-0DA0438A8687}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BCA45A4-2D4D-4580-904D-0DA0438A8687}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BCA45A4-2D4D-4580-904D-0DA0438A8687}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84F702C5-D9C8-4203-A913-8191A769806D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84F702C5-D9C8-4203-A913-8191A769806D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84F702C5-D9C8-4203-A913-8191A769806D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84F702C5-D9C8-4203-A913-8191A769806D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
