@@ -11,6 +11,7 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
 using SixLabors.ImageSharp.Formats;
 using SkyDCore.Mathematics;
+using SixLabors.Fonts;
 
 namespace SkyDCore.Drawing
 {
@@ -385,61 +386,7 @@ namespace SkyDCore.Drawing
         }
 
         /// <summary>
-        /// 为图像添加水印
-        /// </summary>
-        /// <param name="context">图像修改上下文</param>
-        /// <param name="watermarkImage">水印图像</param>
-        /// <param name="opacity">不透明度，取值范围为0到1之间</param>
-        /// <param name="anchor">相对于源图像的方位锚点</param>
-        /// <param name="horizontalEdgeOffset">左侧或右侧的边距</param>
-        /// <param name="verticalEdgeOffset">上方或下方的边距</param>
-        /// <returns>图像修改上下文</returns>
-        public static IImageProcessingContext<TPixel> AddWatermarkImage<TPixel>(this IImageProcessingContext<TPixel> context, Image<TPixel> watermarkImage, float opacity, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset) where TPixel : struct, IPixel<TPixel>
-        {
-            var size = context.GetCurrentSize();
-            var x = horizontalEdgeOffset;
-            var y = verticalEdgeOffset;
-            switch (anchor)
-            {
-                case AnchorPositionMode.Center:
-                    x = size.Width / 2 - watermarkImage.Width / 2;
-                    y = size.Height / 2 - watermarkImage.Height / 2;
-                    break;
-                case AnchorPositionMode.Top:
-                    x = size.Width / 2 - watermarkImage.Width / 2;
-                    break;
-                case AnchorPositionMode.Bottom:
-                    x = size.Width / 2 - watermarkImage.Width / 2;
-                    y = size.Height - verticalEdgeOffset - watermarkImage.Height;
-                    break;
-                case AnchorPositionMode.Left:
-                    y = size.Height / 2 - watermarkImage.Height / 2;
-                    break;
-                case AnchorPositionMode.Right:
-                    x = size.Width - horizontalEdgeOffset - watermarkImage.Width;
-                    y = size.Height / 2 - watermarkImage.Height / 2;
-                    break;
-                case AnchorPositionMode.TopLeft:
-                    break;
-                case AnchorPositionMode.TopRight:
-                    x = size.Width - horizontalEdgeOffset - watermarkImage.Width;
-                    break;
-                case AnchorPositionMode.BottomRight:
-                    x = size.Width - horizontalEdgeOffset - watermarkImage.Width;
-                    y = size.Height - verticalEdgeOffset - watermarkImage.Height;
-                    break;
-                case AnchorPositionMode.BottomLeft:
-                    y = size.Height - verticalEdgeOffset - watermarkImage.Height;
-                    break;
-                default:
-                    break;
-            }
-            context.DrawImage(watermarkImage, opacity, new SixLabors.Primitives.Point(x, y));
-            return context;
-        }
-
-        /// <summary>
-        /// 为图像添加水印
+        /// 为图像添加图像水印
         /// </summary>
         /// <param name="context">图像修改上下文</param>
         /// <param name="watermarkImage">水印图像</param>
@@ -449,7 +396,7 @@ namespace SkyDCore.Drawing
         /// <param name="horizontalEdgeOffset">左侧或右侧的边距</param>
         /// <param name="verticalEdgeOffset">上方或下方的边距</param>
         /// <returns>图像修改上下文</returns>
-        public static IImageProcessingContext<TPixel> AddWatermarkImage<TPixel>(this IImageProcessingContext<TPixel> context, Image<TPixel> watermarkImage, PixelBlenderMode blendMode, float blendPercentage, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset) where TPixel : struct, IPixel<TPixel>
+        public static IImageProcessingContext<TPixel> AddWatermarkImage<TPixel>(this IImageProcessingContext<TPixel> context, Image<TPixel> watermarkImage, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset, PixelBlenderMode blendMode = PixelBlenderMode.Normal, float blendPercentage = 1) where TPixel : struct, IPixel<TPixel>
         {
             var size = context.GetCurrentSize();
             var x = horizontalEdgeOffset;
@@ -494,21 +441,7 @@ namespace SkyDCore.Drawing
         }
 
         /// <summary>
-        /// 为图像添加水印
-        /// </summary>
-        /// <param name="img">图像</param>
-        /// <param name="watermarkImage">水印图像</param>
-        /// <param name="opacity">不透明度，取值范围为0到1之间</param>
-        /// <param name="anchor">相对于源图像的方位锚点</param>
-        /// <param name="horizontalEdgeOffset">左侧或右侧的边距</param>
-        /// <param name="verticalEdgeOffset">上方或下方的边距</param>
-        public static void AddWatermarkImage<TPixel>(this Image<TPixel> img, Image<TPixel> watermarkImage, float opacity, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset) where TPixel : struct, IPixel<TPixel>
-        {
-            img.Mutate(q => q.AddWatermarkImage(watermarkImage, opacity, anchor, horizontalEdgeOffset, verticalEdgeOffset));
-        }
-
-        /// <summary>
-        /// 为图像添加水印
+        /// 为图像添加图像水印
         /// </summary>
         /// <param name="img">图像</param>
         /// <param name="watermarkImage">水印图像</param>
@@ -517,394 +450,131 @@ namespace SkyDCore.Drawing
         /// <param name="anchor">相对于源图像的方位锚点</param>
         /// <param name="horizontalEdgeOffset">左侧或右侧的边距</param>
         /// <param name="verticalEdgeOffset">上方或下方的边距</param>
-        public static void AddWatermarkImage<TPixel>(this Image<TPixel> img, Image<TPixel> watermarkImage, PixelBlenderMode blendMode, float blendPercentage, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset) where TPixel : struct, IPixel<TPixel>
+        public static void AddWatermarkImage<TPixel>(this Image<TPixel> img, Image<TPixel> watermarkImage, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset, PixelBlenderMode blendMode = PixelBlenderMode.Normal, float blendPercentage = 1) where TPixel : struct, IPixel<TPixel>
         {
-            img.Mutate(q => q.AddWatermarkImage(watermarkImage, blendMode, blendPercentage, anchor, horizontalEdgeOffset, verticalEdgeOffset));
+            img.Mutate(q => q.AddWatermarkImage(watermarkImage, anchor, horizontalEdgeOffset, verticalEdgeOffset, blendMode, blendPercentage));
         }
 
+        /// <summary>
+        /// 为图像添加文字水印
+        /// </summary>
+        /// <param name="context">图像修改上下文</param>
+        /// <param name="watermarkImage">水印图像</param>
+        /// <param name="text">文字内容，注意，可能尚不支持中文等双字节文字，会报错：cmap table doesn't support 32-bit characters yet.</param>
+        /// <param name="font">字体，目前似乎只支持ttf格式的字体，定义方法详见注释中的example节点</param>
+        /// <param name="color">文字颜色</param>
+        /// <param name="blendMode">混合类型</param>
+        /// <param name="blendPercentage">混合百分比，约等于不透明度，取值范围为0到1之间</param>
+        /// <param name="anchor">相对于源图像的方位锚点</param>
+        /// <param name="horizontalEdgeOffset">左侧或右侧的边距</param>
+        /// <param name="verticalEdgeOffset">上方或下方的边距</param>
+        /// <example>
+        /// 调用范例：
+        /// <code>
+        /// image.Mutate(q =>
+        /// {
+        ///     q.AutoOrient();
+        ///     //使用程序所在目录下的FZYTK.TTF作为字体
+        ///     var fontfamily = new FontCollection().Install(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "FZYTK.TTF"));
+        ///     var font = new Font(fontfamily, 32);
+        ///     q.AddWatermarkText("DrawTextDrawText111111DrawTextDrawTextDrawText", font, Rgba32.Blue, AnchorPositionMode.TopRight, 50, 100, PixelBlenderMode.Add, 0.8f);
+        /// });
+        /// </code>
+        /// </example>
+        /// <returns>图像修改上下文</returns>
+        public static IImageProcessingContext<TPixel> AddWatermarkText<TPixel>(this IImageProcessingContext<TPixel> context, string text, Font font, TPixel color, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset, PixelBlenderMode blendMode = PixelBlenderMode.Normal, float blendPercentage = 1) where TPixel : struct, IPixel<TPixel>
+        {
+            var size = context.GetCurrentSize();
+            var x = horizontalEdgeOffset;
+            var y = verticalEdgeOffset;
+            var options = new TextGraphicsOptions(true)
+            {
+                BlenderMode = blendMode,
+                BlendPercentage = blendPercentage,
+                VerticalAlignment = VerticalAlignment.Top,
+                HorizontalAlignment = HorizontalAlignment.Left
+            };
+            switch (anchor)
+            {
+                case AnchorPositionMode.Center:
+                    x = size.Width / 2;
+                    y = size.Height / 2;
+                    options.HorizontalAlignment = HorizontalAlignment.Center;
+                    options.VerticalAlignment = VerticalAlignment.Center;
+                    break;
+                case AnchorPositionMode.Top:
+                    x = size.Width / 2;
+                    options.HorizontalAlignment = HorizontalAlignment.Center;
+                    break;
+                case AnchorPositionMode.Bottom:
+                    x = size.Width / 2;
+                    y = size.Height - verticalEdgeOffset;
+                    options.HorizontalAlignment = HorizontalAlignment.Center;
+                    options.VerticalAlignment = VerticalAlignment.Bottom;
+                    break;
+                case AnchorPositionMode.Left:
+                    y = size.Height / 2;
+                    options.VerticalAlignment = VerticalAlignment.Center;
+                    break;
+                case AnchorPositionMode.Right:
+                    x = size.Width - horizontalEdgeOffset;
+                    y = size.Height / 2;
+                    options.HorizontalAlignment = HorizontalAlignment.Right;
+                    options.VerticalAlignment = VerticalAlignment.Center;
+                    break;
+                case AnchorPositionMode.TopLeft:
+                    break;
+                case AnchorPositionMode.TopRight:
+                    x = size.Width - horizontalEdgeOffset;
+                    options.HorizontalAlignment = HorizontalAlignment.Right;
+                    break;
+                case AnchorPositionMode.BottomRight:
+                    x = size.Width - horizontalEdgeOffset;
+                    y = size.Height - verticalEdgeOffset;
+                    options.HorizontalAlignment = HorizontalAlignment.Right;
+                    options.VerticalAlignment = VerticalAlignment.Bottom;
+                    break;
+                case AnchorPositionMode.BottomLeft:
+                    y = size.Height - verticalEdgeOffset;
+                    options.VerticalAlignment = VerticalAlignment.Bottom;
+                    break;
+                default:
+                    break;
+            }
+            context.DrawText(options, text, font, color, new SixLabors.Primitives.PointF(x, y));
+            return context;
+        }
 
-        ///// <summary>
-        ///// 为图像添加水印，并生成新的图像
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="水印图像文件路径">水印图像文件路径</param>
-        ///// <param name="水印方位">相对于源图像的方位，在不冲突的情况下可复选，比如“水印方位.右|水印方位.下”</param>
-        ///// <param name="水平边距">左侧或右侧的边距</param>
-        ///// <param name="垂直边距">上方或下方的边距</param>
-        ///// <returns>添加了水印的图片</returns>
-        //public static Bitmap 添加水印(this Image 图像, string 水印图像文件路径, AlignType 水印方位, int 水平边距, int 垂直边距)
-        //{
-        //    return 添加水印(图像, 读取图像自文件(水印图像文件路径), 水印方位, 水平边距, 垂直边距);
-        //}
-
-        ///// <summary>
-        ///// 为图像添加水印，并生成新的图像
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="水印图像">水印图像</param>
-        ///// <param name="水印方位">相对于源图像的方位，在不冲突的情况下可复选，比如“水印方位.右|水印方位.下”</param>
-        ///// <param name="水平边距">左侧或右侧的边距</param>
-        ///// <param name="垂直边距">上方或下方的边距</param>
-        ///// <returns>添加了水印的图片</returns>
-        //public static Bitmap 添加水印(this Image 图像, Image 水印图像, AlignType 水印方位, int 水平边距, int 垂直边距)
-        //{
-        //    Bitmap Bmp = 图像.Clone() as Bitmap;
-        //    原图添加水印(Bmp, 水印图像, 水印方位, 水平边距, 垂直边距);
-        //    return Bmp;
-        //}
-
-        ///// <summary>
-        ///// 创建一个目标像素格式的副本。此方法除了常规用途外，还可以用于将索引图像创建为可以被处理的普通图像。
-        ///// </summary>
-        ///// <param name="图像">原图像</param>
-        ///// <param name="目标像素格式">副本图像的像素格式，默认为Format16bppRgb555，使用Format32bppArgb可以很好的保留图像颜色和透明度</param>
-        ///// <returns>原图像的副本</returns>
-        //public static Bitmap 创建副本(this Image 图像, PixelFormat 目标像素格式 = PixelFormat.Format16bppRgb555)
-        //{
-        //    var img = new Bitmap(图像.Width, 图像.Height, 目标像素格式);
-        //    var g = Graphics.FromImage(img);
-        //    g.DrawImage(图像, 0, 0, 图像.Width, 图像.Height);
-        //    g.Dispose();
-        //    return img;
-        //}
-
-        ///// <summary>
-        ///// 为原图添加水印
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="水印图像">水印图像</param>
-        ///// <param name="水印方位">相对于源图像的方位，在不冲突的情况下可复选，比如“水印方位.右|水印方位.下”</param>
-        ///// <param name="水平边距">左侧或右侧的边距</param>
-        ///// <param name="垂直边距">上方或下方的边距</param>
-        ///// <returns>添加了水印的图片</returns>
-        //public static void 原图添加水印(this Image 图像, Image 水印图像, AlignType 水印方位, int 水平边距, int 垂直边距)
-        //{
-        //    Graphics g = Graphics.FromImage(图像);
-        //    var x = 图像.Width / 2 - 水印图像.Width / 2;
-        //    var y = 图像.Height / 2 - 水印图像.Height / 2;
-        //    if ((水印方位 & AlignType.Top) > 0)
-        //    {
-        //        y = 0 + 垂直边距;
-        //    }
-        //    if ((水印方位 & AlignType.Bottom) > 0)
-        //    {
-        //        y = 图像.Height - 水印图像.Height - 垂直边距;
-        //    }
-        //    if ((水印方位 & AlignType.Left) > 0)
-        //    {
-        //        x = 0 + 水平边距;
-        //    }
-        //    if ((水印方位 & AlignType.Right) > 0)
-        //    {
-        //        x = 图像.Width - 水印图像.Width - 水平边距;
-        //    }
-        //    g.DrawImage(水印图像, new Rectangle(x, y, 水印图像.Width, 水印图像.Height), 0, 0, 水印图像.Width, 水印图像.Height, GraphicsUnit.Pixel);
-        //    g.Dispose();
-        //}
-
-        ///// <summary>
-        ///// 将源图像上覆盖以目标图像
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="覆盖图像">目标图像</param>
-        ///// <param name="左上角X坐标">起始X坐标</param>
-        ///// <param name="左上角Y坐标">起始Y坐标</param>
-        //public static void 覆盖图像(this Image 图像, Image 覆盖图像, int 左上角X坐标, int 左上角Y坐标)
-        //{
-        //    Graphics g = Graphics.FromImage(图像);
-        //    g.DrawImage(覆盖图像, 左上角X坐标, 左上角Y坐标);
-        //    g.Dispose();
-        //}
-
-        ///// <summary>
-        ///// [已过时] 生成缩略图,返回缩略图的Image对象
-        ///// </summary>
-        ///// <param name="图像">需要处理的图像</param>
-        ///// <param name="宽">缩略图宽度</param>
-        ///// <param name="高">缩略图高度</param>
-        ///// <param name="等比缩放">是否按等比例进行缩放，否则将生成固定尺寸的缩略图</param>
-        ///// <returns>缩略图的Image对象</returns>
-        //public static Image 生成缩略图(Image 图像, int 宽, int 高, bool 等比缩放)
-        //{
-        //    Size size = new Size(宽, 高);
-        //    if (等比缩放) size = 计算缩略图尺寸(图像.Width, 图像.Height, size.Width, size.Height);
-        //    Image img;
-        //    Image.GetThumbnailImageAbort callb = new Image.GetThumbnailImageAbort(回调);
-        //    img = 图像.GetThumbnailImage(size.Width, size.Height, callb, IntPtr.Zero);
-        //    return img;
-        //}
-
-        ///// <summary>
-        ///// [已过时] 保存缩略图
-        ///// </summary>
-        ///// <param name="图像">需要处理的图像</param>
-        ///// <param name="保存路径">文件存储路径</param>
-        ///// <param name="宽">宽度</param>
-        ///// <param name="高">高度</param>
-        //public static void 保存缩略图(Image 图像, string 保存路径, int 宽, int 高, bool 等比缩放)
-        //{
-        //    switch (保存路径.AsPathString().Extension)
-        //    {
-        //        case ".png":
-        //            保存缩略图(图像, 保存路径, 宽, 高, ImageFormat.Png, 等比缩放);
-        //            break;
-        //        case ".gif":
-        //            保存缩略图(图像, 保存路径, 宽, 高, ImageFormat.Gif, 等比缩放);
-        //            break;
-        //        default:
-        //            保存缩略图(图像, 保存路径, 宽, 高, ImageFormat.Jpeg, 等比缩放);
-        //            break;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// [已过时] 生成缩略图并保存
-        ///// </summary>
-        ///// <param name="图像">需要处理的图像</param>
-        ///// <param name="保存路径">文件存储路径</param>
-        ///// <param name="宽">缩略图的宽度</param>
-        ///// <param name="高">缩略图的高度</param>
-        ///// <param name="图像格式">保存的图像格式</param>
-        ///// <returns>缩略图的Image对象</returns>
-        //public static void 保存缩略图(Image 图像, string 保存路径, int 宽, int 高, ImageFormat 图像格式, bool 等比缩放)
-        //{
-        //    if ((图像.Width > 宽) || (图像.Height > 高))
-        //    {
-        //        Image img = 生成缩略图(图像, 宽, 高, 等比缩放);
-        //        图像.Dispose();
-        //        img.Save(保存路径, 图像格式);
-        //        img.Dispose();
-        //    }
-        //}
-
-        ///// <summary>
-        ///// [已过时] 为图像添加图片水印
-        ///// </summary>
-        ///// <param name="图像">要处理的图像</param>
-        ///// <param name="文件保存路径">处理后图片保存的路径</param>
-        ///// <param name="水印图片路径">要添加的水印图片路径</param>
-        ///// <param name="水印位置">水印的添加位置，范围为1-9，九宫格分布</param>
-        ///// <param name="质量">图像品质，范围为1-100</param>
-        ///// <param name="透明度">水印图片的透明度，范围为1-10，数值越小则透明度越高</param>
-        //public static void 添加图片水印(Image 图像, string 文件保存路径, string 水印图片路径, int 水印位置, int 质量, int 透明度)
-        //{
-        //    Graphics g = Graphics.FromImage(图像);
-        //    //设置高质量插值法
-        //    //g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-        //    //设置高质量,低速度呈现平滑程度
-        //    //g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-        //    Image 水印图片 = new Bitmap(水印图片路径);
-
-        //    if (水印图片.Height > 图像.Height / 3 || 水印图片.Width > 图像.Width / 3) 水印图片 = 生成缩略图(水印图片, 图像.Width / 3, 图像.Height / 3, true);
-
-        //    ImageAttributes imageAttributes = new ImageAttributes();
-        //    ColorMap colorMap = new ColorMap();
-
-        //    colorMap.OldColor = Color.FromArgb(255, 0, 255, 0);
-        //    colorMap.NewColor = Color.FromArgb(0, 0, 0, 0);
-        //    ColorMap[] remapTable = { colorMap };
-
-        //    imageAttributes.SetRemapTable(remapTable, ColorAdjustType.Bitmap);
-
-        //    float transparency = 0.5F;
-        //    if (透明度 >= 1 && 透明度 <= 10)
-        //    {
-        //        transparency = (透明度 / 10.0F);
-        //    }
-
-        //    float[][] colorMatrixElements = {
-        //                                        new float[] {1.0f,  0.0f,  0.0f,  0.0f, 0.0f},
-        //                                        new float[] {0.0f,  1.0f,  0.0f,  0.0f, 0.0f},
-        //                                        new float[] {0.0f,  0.0f,  1.0f,  0.0f, 0.0f},
-        //                                        new float[] {0.0f,  0.0f,  0.0f,  transparency, 0.0f},
-        //                                        new float[] {0.0f,  0.0f,  0.0f,  0.0f, 1.0f}
-        //                                    };
-
-        //    ColorMatrix colorMatrix = new ColorMatrix(colorMatrixElements);
-
-        //    imageAttributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-
-        //    int xpos = 0;
-        //    int ypos = 0;
-
-        //    switch (水印位置)
-        //    {
-        //        case 1:
-        //            xpos = (int)(图像.Width * (float).01);
-        //            ypos = (int)(图像.Height * (float).01);
-        //            break;
-        //        case 2:
-        //            xpos = (int)((图像.Width * (float).50) - (水印图片.Width / 2));
-        //            ypos = (int)(图像.Height * (float).01);
-        //            break;
-        //        case 3:
-        //            xpos = (int)((图像.Width * (float).99) - (水印图片.Width));
-        //            ypos = (int)(图像.Height * (float).01);
-        //            break;
-        //        case 4:
-        //            xpos = (int)(图像.Width * (float).01);
-        //            ypos = (int)((图像.Height * (float).50) - (水印图片.Height / 2));
-        //            break;
-        //        case 5:
-        //            xpos = (int)((图像.Width * (float).50) - (水印图片.Width / 2));
-        //            ypos = (int)((图像.Height * (float).50) - (水印图片.Height / 2));
-        //            break;
-        //        case 6:
-        //            xpos = (int)((图像.Width * (float).99) - (水印图片.Width));
-        //            ypos = (int)((图像.Height * (float).50) - (水印图片.Height / 2));
-        //            break;
-        //        case 7:
-        //            xpos = (int)(图像.Width * (float).01);
-        //            ypos = (int)((图像.Height * (float).99) - 水印图片.Height);
-        //            break;
-        //        case 8:
-        //            xpos = (int)((图像.Width * (float).50) - (水印图片.Width / 2));
-        //            ypos = (int)((图像.Height * (float).99) - 水印图片.Height);
-        //            break;
-        //        case 9:
-        //            xpos = (int)((图像.Width * (float).99) - (水印图片.Width));
-        //            ypos = (int)((图像.Height * (float).99) - 水印图片.Height);
-        //            break;
-        //    }
-
-        //    g.DrawImage(水印图片, new Rectangle(xpos, ypos, 水印图片.Width, 水印图片.Height), 0, 0, 水印图片.Width, 水印图片.Height, GraphicsUnit.Pixel, imageAttributes);
-        //    //g.DrawImage(watermark, new System.Drawing.Rectangle(xpos, ypos, watermark.Width, watermark.Height), 0, 0, watermark.Width, watermark.Height, System.Drawing.GraphicsUnit.Pixel);
-
-        //    ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
-        //    ImageCodecInfo ici = null;
-        //    foreach (ImageCodecInfo codec in codecs)
-        //    {
-        //        if (codec.MimeType.IndexOf("jpeg") > -1)
-        //        {
-        //            ici = codec;
-        //        }
-        //    }
-        //    EncoderParameters encoderParams = new EncoderParameters();
-        //    long[] qualityParam = new long[1];
-        //    if (质量 < 0 || 质量 > 100)
-        //    {
-        //        质量 = 80;
-        //    }
-        //    qualityParam[0] = 质量;
-
-        //    EncoderParameter encoderParam = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, qualityParam);
-        //    encoderParams.Param[0] = encoderParam;
-
-        //    if (ici != null)
-        //    {
-        //        图像.Save(文件保存路径, ici, encoderParams);
-        //    }
-        //    else
-        //    {
-        //        图像.Save(文件保存路径);
-        //    }
-
-        //    g.Dispose();
-        //    图像.Dispose();
-        //    水印图片.Dispose();
-        //    imageAttributes.Dispose();
-        //}
-
-        ///// <summary>
-        ///// [已过时] 为图像添加文字水印
-        ///// </summary>
-        ///// <param name="图像">要处理的图像</param>
-        ///// <param name="文件保存路径">处理后图片保存的路径</param>
-        ///// <param name="水印位置">水印的添加位置，范围为1-9，九宫格分布</param>
-        ///// <param name="质量">图像品质，范围为1-100</param>
-        ///// <param name="水印文字">水印的文字内容</param>
-        ///// <param name="字体">字体名称</param>
-        ///// <param name="字号">水印图片的透明度，范围为1-10，数值越小则透明度越高</param>
-        //public static void 添加文字水印(Image 图像, string 文件保存路径, int 水印位置, int 质量, string 水印文字, string 字体, int 字号)
-        //{
-        //    Graphics g = Graphics.FromImage(图像);
-        //    Font drawFont = new Font(字体, 字号, FontStyle.Regular, GraphicsUnit.Pixel);
-        //    SizeF crSize;
-        //    crSize = g.MeasureString(水印文字, drawFont);
-
-        //    float xpos = 0;
-        //    float ypos = 0;
-
-        //    switch (水印位置)
-        //    {
-        //        case 1:
-        //            xpos = (float)图像.Width * (float).01;
-        //            ypos = (float)图像.Height * (float).01;
-        //            break;
-        //        case 2:
-        //            xpos = ((float)图像.Width * (float).50) - (crSize.Width / 2);
-        //            ypos = (float)图像.Height * (float).01;
-        //            break;
-        //        case 3:
-        //            xpos = ((float)图像.Width * (float).99) - crSize.Width;
-        //            ypos = (float)图像.Height * (float).01;
-        //            break;
-        //        case 4:
-        //            xpos = (float)图像.Width * (float).01;
-        //            ypos = ((float)图像.Height * (float).50) - (crSize.Height / 2);
-        //            break;
-        //        case 5:
-        //            xpos = ((float)图像.Width * (float).50) - (crSize.Width / 2);
-        //            ypos = ((float)图像.Height * (float).50) - (crSize.Height / 2);
-        //            break;
-        //        case 6:
-        //            xpos = ((float)图像.Width * (float).99) - crSize.Width;
-        //            ypos = ((float)图像.Height * (float).50) - (crSize.Height / 2);
-        //            break;
-        //        case 7:
-        //            xpos = (float)图像.Width * (float).01;
-        //            ypos = ((float)图像.Height * (float).99) - crSize.Height;
-        //            break;
-        //        case 8:
-        //            xpos = ((float)图像.Width * (float).50) - (crSize.Width / 2);
-        //            ypos = ((float)图像.Height * (float).99) - crSize.Height;
-        //            break;
-        //        case 9:
-        //            xpos = ((float)图像.Width * (float).99) - crSize.Width;
-        //            ypos = ((float)图像.Height * (float).99) - crSize.Height;
-        //            break;
-        //    }
-
-        //    //			System.Drawing.StringFormat StrFormat = new System.Drawing.StringFormat();
-        //    //			StrFormat.Alignment = System.Drawing.StringAlignment.Center;
-        //    //
-        //    //			g.DrawString(watermarkText, drawFont, new System.Drawing.SolidBrush(System.Drawing.Color.White), xpos + 1, ypos + 1, StrFormat);
-        //    //			g.DrawString(watermarkText, drawFont, new System.Drawing.SolidBrush(System.Drawing.Color.Black), xpos, ypos, StrFormat);
-        //    g.DrawString(水印文字, drawFont, new SolidBrush(Color.White), xpos + 1, ypos + 1);
-        //    g.DrawString(水印文字, drawFont, new SolidBrush(Color.Black), xpos, ypos);
-
-        //    ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
-        //    ImageCodecInfo ici = null;
-        //    foreach (ImageCodecInfo codec in codecs)
-        //    {
-        //        if (codec.MimeType.IndexOf("jpeg") > -1)
-        //        {
-        //            ici = codec;
-        //        }
-        //    }
-        //    EncoderParameters encoderParams = new EncoderParameters();
-        //    long[] qualityParam = new long[1];
-        //    if (质量 < 0 || 质量 > 100)
-        //    {
-        //        质量 = 80;
-        //    }
-        //    qualityParam[0] = 质量;
-
-        //    EncoderParameter encoderParam = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, qualityParam);
-        //    encoderParams.Param[0] = encoderParam;
-
-        //    if (ici != null)
-        //    {
-        //        图像.Save(文件保存路径, ici, encoderParams);
-        //    }
-        //    else
-        //    {
-        //        图像.Save(文件保存路径);
-        //    }
-        //    g.Dispose();
-        //    //bmp.Dispose();
-        //    图像.Dispose();
-        //}
+        /// <summary>
+        /// 为图像添加文字水印
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="watermarkImage">水印图像</param>
+        /// <param name="text">文字内容，注意，可能尚不支持中文等双字节文字，会报错：cmap table doesn't support 32-bit characters yet.</param>
+        /// <param name="font">字体，目前似乎只支持ttf格式的字体，定义方法详见注释中的example节点</param>
+        /// <param name="color">文字颜色</param>
+        /// <param name="blendMode">混合类型</param>
+        /// <param name="blendPercentage">混合百分比，约等于不透明度，取值范围为0到1之间</param>
+        /// <param name="anchor">相对于源图像的方位锚点</param>
+        /// <param name="horizontalEdgeOffset">左侧或右侧的边距</param>
+        /// <param name="verticalEdgeOffset">上方或下方的边距</param>
+        /// <example>
+        /// 调用范例：
+        /// <code>
+        /// image.Mutate(q =>
+        /// {
+        ///     q.AutoOrient();
+        ///     //使用程序所在目录下的FZYTK.TTF作为字体
+        ///     var fontfamily = new FontCollection().Install(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "FZYTK.TTF"));
+        ///     var font = new Font(fontfamily, 32);
+        ///     q.AddWatermarkText("DrawTextDrawText111111DrawTextDrawTextDrawText", font, Rgba32.Blue, AnchorPositionMode.TopRight, 50, 100, PixelBlenderMode.Add, 0.8f);
+        /// });
+        /// </code>
+        /// </example>
+        public static void AddWatermarkText<TPixel>(this Image<TPixel> img, string text, Font font, TPixel color, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset, PixelBlenderMode blendMode = PixelBlenderMode.Normal, float blendPercentage = 1) where TPixel : struct, IPixel<TPixel>
+        {
+            img.Mutate(q => q.AddWatermarkText(text, font, color, anchor, horizontalEdgeOffset, verticalEdgeOffset, blendMode, blendPercentage));
+        }
 
         /// <summary>
         /// 验证Web文件格式是否为常用图片格式
@@ -980,86 +650,6 @@ namespace SkyDCore.Drawing
         {
             return 坐标点.X >= 矩形.Left && 坐标点.X <= 矩形.Right && 坐标点.Y >= 矩形.Top && 坐标点.Y <= 矩形.Bottom;
         }
-
-        ///// <summary>
-        ///// 生成缩略图
-        ///// </summary>
-        ///// <param name="originalImagePath">源图路径（物理路径）</param>
-        ///// <param name="thumbnailPath">缩略图路径（物理路径）</param>
-        ///// <param name="width">缩略图宽度</param>
-        ///// <param name="height">缩略图高度</param>
-        ///// <param name="mode">生成缩略图的方式</param>    
-        //public static void 创建缩略图(string originalImagePath, string thumbnailPath, int width, int height, string mode)
-        //{
-        //    System.Drawing.Image originalImage = 读取图像自文件(originalImagePath);
-
-        //    int towidth = width;
-        //    int toheight = height;
-
-        //    int x = 0;
-        //    int y = 0;
-        //    int ow = originalImage.Width;
-        //    int oh = originalImage.Height;
-        //    switch (mode)
-        //    {
-        //        case "HW"://指定高宽缩放（可能变形）                
-        //            break;
-        //        case "W"://指定宽，高按比例                    
-        //            toheight = originalImage.Height * width / originalImage.Width;
-        //            break;
-        //        case "H"://指定高，宽按比例
-        //            towidth = originalImage.Width * height / originalImage.Height;
-        //            break;
-        //        case "Cut"://指定高宽裁减（不变形）                
-        //            if ((double)originalImage.Width / (double)originalImage.Height > (double)towidth / (double)toheight)
-        //            {
-        //                oh = originalImage.Height;
-        //                ow = originalImage.Height * towidth / toheight;
-        //                y = 0;
-        //                x = (originalImage.Width - ow) / 2;
-        //            }
-        //            else
-        //            {
-        //                ow = originalImage.Width;
-        //                oh = originalImage.Width * height / towidth;
-        //                x = 0;
-        //                y = (originalImage.Height - oh) / 2;
-        //            }
-        //            break;
-        //        default:
-        //            break;
-        //    }
-
-        //    //新建一个bmp图片
-        //    System.Drawing.Image bitmap = new System.Drawing.Bitmap(towidth, toheight);
-        //    //新建一个画板
-        //    System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bitmap);
-        //    //设置高质量插值法
-        //    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-        //    //设置高质量,低速度呈现平滑程度
-        //    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-        //    //清空画布并以透明背景色填充
-        //    g.Clear(System.Drawing.Color.Transparent);
-        //    //在指定位置并且按指定大小绘制原图片的指定部分
-        //    g.DrawImage(originalImage, new System.Drawing.Rectangle(0, 0, towidth, toheight),
-        //        new System.Drawing.Rectangle(x, y, ow, oh),
-        //        System.Drawing.GraphicsUnit.Pixel);
-        //    try
-        //    {
-        //        //以jpg格式保存缩略图
-        //        bitmap.Save(thumbnailPath, System.Drawing.Imaging.ImageFormat.Jpeg);
-        //    }
-        //    catch (System.Exception e)
-        //    {
-        //        throw e;
-        //    }
-        //    finally
-        //    {
-        //        originalImage.Dispose();
-        //        bitmap.Dispose();
-        //        g.Dispose();
-        //    }
-        //}
 
         /// <summary>
         /// 求最大公约数
