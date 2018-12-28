@@ -592,7 +592,22 @@ namespace SkyDCore.Drawing
 
         static Random rand = new Random();
 
-        public static Image<Rgb24> CreateVerificationCode(string code, Font font, int width, int height)
+        /// <summary>
+        /// 生成验证码图像
+        /// </summary>
+        /// <param name="code">验证码，注意，可能尚不支持中文等双字节文字，会报错：cmap table doesn't support 32-bit characters yet.</param>
+        /// <param name="font">字体，目前似乎只支持ttf格式的字体，定义方法详见注释中的example节点</param>
+        /// <param name="width">图像宽度</param>
+        /// <param name="height">图像高度</param>
+        /// <returns>生成的图像</returns>
+        /// <example>
+        /// 调用范例：
+        /// <code>
+        /// var font = SystemFonts.CreateFont("Arial", 16, FontStyle.Regular);
+        /// SkyDCoreDrawingAssist.CreateVerificationCodeImage("1jz19", font, 120, 32).SaveAsJpegToFile("CreateVerificationCode.jpg", 90);
+        /// </code>
+        /// </example>
+        public static Image<Rgb24> CreateVerificationCodeImage(string code, Font font, int width, int height)
         {
             var img = new Image<Rgb24>(Configuration.Default, width, height, new Rgb24(255, 255, 255));
             var options = new GraphicsOptions(true) { BlenderMode = PixelBlenderMode.Darken, BlendPercentage = 0.7f };
@@ -630,7 +645,7 @@ namespace SkyDCore.Drawing
                         code[i].ToString(),
                         font,
                         new Rgb24((byte)rand.Next(0, 128), (byte)rand.Next(0, 128), (byte)rand.Next(0, 128)),
-                        new SixLabors.Primitives.PointF((i + 1.5f) * (width * 1.0f / (code.Length + 2)), rand.Next(font.Size.RoundToInt() / 2, height - font.Size.RoundToInt() /2))
+                        new SixLabors.Primitives.PointF((i + 1.5f) * (width * 1.0f / (code.Length + 2)), rand.Next(font.Size.RoundToInt() / 2, height - font.Size.RoundToInt() / 2))
                         );
                 }
                 for (int i = 0; i < rand.Next(1, 3); i++)
@@ -661,9 +676,15 @@ namespace SkyDCore.Drawing
             return img;
         }
 
-        public static bool 验证矩形区域是否包含坐标点(this System.Drawing.Rectangle 矩形, System.Drawing.Point 坐标点)
+        /// <summary>
+        /// 验证矩形区域中是否包含指定坐标点
+        /// </summary>
+        /// <param name="rect">矩形</param>
+        /// <param name="point">坐标点</param>
+        /// <returns>是否包含</returns>
+        public static bool VerificationIsIncludePoint(this System.Drawing.Rectangle rect, System.Drawing.Point point)
         {
-            return 坐标点.X >= 矩形.Left && 坐标点.X <= 矩形.Right && 坐标点.Y >= 矩形.Top && 坐标点.Y <= 矩形.Bottom;
+            return point.X >= rect.Left && point.X <= rect.Right && point.Y >= rect.Top && point.Y <= rect.Bottom;
         }
 
         /// <summary>
@@ -685,21 +706,21 @@ namespace SkyDCore.Drawing
         /// <param name="width">宽度</param>
         /// <param name="height">高度</param>
         /// <returns>宽高比例</returns>
-        public static System.Drawing.Size CalculateRatio(int width, int height)
+        public static SixLabors.Primitives.Size CalculateRatio(int width, int height)
         {
             var n = CalculateGCD(width, height);
-            return new System.Drawing.Size(width / n, height / n);
+            return new SixLabors.Primitives.Size(width / n, height / n);
         }
 
-        ///// <summary>
-        ///// 求宽高比例
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <returns>宽高比例</returns>
-        //public static Size 计算比例(this Image 图像)
-        //{
-        //    return 计算比例(图像.Width, 图像.Height);
-        //}
+        /// <summary>
+        /// 求宽高比例
+        /// </summary>
+        /// <param name="img">源图像</param>
+        /// <returns>宽高比例</returns>
+        public static SixLabors.Primitives.Size CalculateRatio<TPixel>(this Image<TPixel> img) where TPixel : struct, IPixel<TPixel>
+        {
+            return CalculateRatio(img.Width, img.Height);
+        }
 
         /// <summary>
         /// 计算指定尺寸的比例，如果不合比例（超出最大比值）则返回null
@@ -708,7 +729,7 @@ namespace SkyDCore.Drawing
         /// <param name="height">指定高度</param>
         /// <param name="maxRatioValue">最大的比例值</param>
         /// <returns>比例</returns>
-        public static System.Drawing.Size? CalculateRatio(int width, int height, int maxRatioValue)
+        public static SixLabors.Primitives.Size? CalculateRatio(int width, int height, int maxRatioValue)
         {
             for (int i = 1; i <= maxRatioValue; i++)
             {
@@ -716,23 +737,23 @@ namespace SkyDCore.Drawing
                 {
                     if (width * 1.00 / i == height * 1.00 / j)
                     {
-                        return new System.Drawing.Size(i, j);
+                        return new SixLabors.Primitives.Size(i, j);
                     }
                 }
             }
             return null;
         }
 
-        ///// <summary>
-        ///// 计算图像的比例，如果不合比例（超出最大比值）则返回null
-        ///// </summary>
-        ///// <param name="图像">源图像</param>
-        ///// <param name="最大比值">最大的比例值</param>
-        ///// <returns>比例</returns>
-        //public static Size? 计算比例(this Image 图像, int 最大比值)
-        //{
-        //    return 计算比例(图像.Width, 图像.Height, 最大比值);
-        //}
+        /// <summary>
+        /// 计算图像的比例，如果不合比例（超出最大比值）则返回null
+        /// </summary>
+        /// <param name="图像">源图像</param>
+        /// <param name="最大比值">最大的比例值</param>
+        /// <returns>比例</returns>
+        public static SixLabors.Primitives.Size? CalculateRatio<TPixel>(this Image<TPixel> img, int maxRatioValue) where TPixel : struct, IPixel<TPixel>
+        {
+            return CalculateRatio(img.Width, img.Height, maxRatioValue);
+        }
 
         /// <summary>
         /// 计算小于或等于指定尺寸的最邻近的符合比例的尺寸，比如300*201将会返回300*200，因其符合3:2的比例。
@@ -743,7 +764,7 @@ namespace SkyDCore.Drawing
         /// <param name="verticalMaxRatioValue">最大的比例值</param>
         /// <param name="maxRatioValueProduct">纵横比例值的最大乘积</param>
         /// <returns>邻近比例尺寸</returns>
-        public static System.Drawing.Size CalculateApproximateRatioSize(int width, int height, int horizontalMaxRatioValue, int verticalMaxRatioValue, int maxRatioValueProduct)
+        public static SixLabors.Primitives.Size CalculateApproximateRatioSize(int width, int height, int horizontalMaxRatioValue, int verticalMaxRatioValue, int maxRatioValueProduct)
         {
             int offset = Int32.MaxValue;
             int ow = 0;
@@ -772,7 +793,7 @@ namespace SkyDCore.Drawing
                 }
             }
 
-            return new System.Drawing.Size(ow, oh);
+            return new SixLabors.Primitives.Size(ow, oh);
         }
     }
 }
