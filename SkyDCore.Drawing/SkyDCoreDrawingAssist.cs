@@ -350,6 +350,29 @@ namespace SkyDCore.Drawing
             img.CropByAnchorPosition(size.Width, size.Height, AnchorPositionMode.Center, 0);
         }
 
+
+        /// <summary>
+        /// 居中剪裁图像为指定比例
+        /// </summary>
+        /// <param name="context">图像修改上下文</param>
+        /// <param name="horizontalRatioValue">横向比例</param>
+        /// <param name="verticalRatioValue">纵向比例</param>
+        /// <param name="imageWidth">原图宽度</param>
+        /// <param name="imageHeight">原图高度</param>
+        /// <returns>图像修改上下文</returns>
+        public static IImageProcessingContext<TPixel> CropToRatioSize<TPixel>(this IImageProcessingContext<TPixel> context, int horizontalRatioValue, int verticalRatioValue, int imageWidth, int imageHeigh) where TPixel : struct, IPixel<TPixel>
+        {
+            var w = imageWidth;
+            var h = (imageWidth * 1.0 / horizontalRatioValue * verticalRatioValue).FloorToInt();
+            if (h > imageHeigh)
+            {
+                w = (imageHeigh * 1.0 / verticalRatioValue * horizontalRatioValue).FloorToInt();
+                h = imageHeigh;
+            }
+            context.CropByAnchorPosition(w, h,imageWidth,imageHeigh, AnchorPositionMode.Center, 0);
+            return context;
+        }
+
         /// <summary>
         /// 居中剪裁图像为指定比例
         /// </summary>
@@ -358,14 +381,7 @@ namespace SkyDCore.Drawing
         /// <param name="verticalRatioValue">纵向比例</param>
         public static void CropToRatioSize<TPixel>(this Image<TPixel> img, int horizontalRatioValue, int verticalRatioValue) where TPixel : struct, IPixel<TPixel>
         {
-            var w = img.Width;
-            var h = (img.Width * 1.0 / horizontalRatioValue * verticalRatioValue).FloorToInt();
-            if (h > img.Height)
-            {
-                w = (img.Height * 1.0 / verticalRatioValue * horizontalRatioValue).FloorToInt();
-                h = img.Height;
-            }
-            img.CropByAnchorPosition(w, h, AnchorPositionMode.Center, 0);
+            img.Mutate(q => q.CropToRatioSize(horizontalRatioValue, verticalRatioValue, img.Width, img.Height));
         }
 
         ///// <summary>
