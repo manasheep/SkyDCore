@@ -441,6 +441,61 @@ namespace SkyDCore.Drawing
         /// <summary>
         /// 为图像添加水印
         /// </summary>
+        /// <param name="context">图像修改上下文</param>
+        /// <param name="watermarkImage">水印图像</param>
+        /// <param name="blendMode">混合类型</param>
+        /// <param name="blendPercentage">混合百分比，约等于不透明度，取值范围为0到1之间</param>
+        /// <param name="anchor">相对于源图像的方位锚点</param>
+        /// <param name="horizontalEdgeOffset">左侧或右侧的边距</param>
+        /// <param name="verticalEdgeOffset">上方或下方的边距</param>
+        /// <returns>图像修改上下文</returns>
+        public static IImageProcessingContext<TPixel> AddWatermarkImage<TPixel>(this IImageProcessingContext<TPixel> context, Image<TPixel> watermarkImage, PixelBlenderMode blendMode, float blendPercentage, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset) where TPixel : struct, IPixel<TPixel>
+        {
+            var size = context.GetCurrentSize();
+            var x = horizontalEdgeOffset;
+            var y = verticalEdgeOffset;
+            switch (anchor)
+            {
+                case AnchorPositionMode.Center:
+                    x = size.Width / 2 - watermarkImage.Width / 2;
+                    y = size.Height / 2 - watermarkImage.Height / 2;
+                    break;
+                case AnchorPositionMode.Top:
+                    x = size.Width / 2 - watermarkImage.Width / 2;
+                    break;
+                case AnchorPositionMode.Bottom:
+                    x = size.Width / 2 - watermarkImage.Width / 2;
+                    y = size.Height - verticalEdgeOffset - watermarkImage.Height;
+                    break;
+                case AnchorPositionMode.Left:
+                    y = size.Height / 2 - watermarkImage.Height / 2;
+                    break;
+                case AnchorPositionMode.Right:
+                    x = size.Width - horizontalEdgeOffset - watermarkImage.Width;
+                    y = size.Height / 2 - watermarkImage.Height / 2;
+                    break;
+                case AnchorPositionMode.TopLeft:
+                    break;
+                case AnchorPositionMode.TopRight:
+                    x = size.Width - horizontalEdgeOffset - watermarkImage.Width;
+                    break;
+                case AnchorPositionMode.BottomRight:
+                    x = size.Width - horizontalEdgeOffset - watermarkImage.Width;
+                    y = size.Height - verticalEdgeOffset - watermarkImage.Height;
+                    break;
+                case AnchorPositionMode.BottomLeft:
+                    y = size.Height - verticalEdgeOffset - watermarkImage.Height;
+                    break;
+                default:
+                    break;
+            }
+            context.DrawImage(new GraphicsOptions(true) { BlendPercentage = blendPercentage, BlenderMode = blendMode }, watermarkImage, new SixLabors.Primitives.Point(x, y));
+            return context;
+        }
+
+        /// <summary>
+        /// 为图像添加水印
+        /// </summary>
         /// <param name="img">图像</param>
         /// <param name="watermarkImage">水印图像</param>
         /// <param name="opacity">不透明度，取值范围为0到1之间</param>
@@ -449,8 +504,24 @@ namespace SkyDCore.Drawing
         /// <param name="verticalEdgeOffset">上方或下方的边距</param>
         public static void AddWatermarkImage<TPixel>(this Image<TPixel> img, Image<TPixel> watermarkImage, float opacity, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset) where TPixel : struct, IPixel<TPixel>
         {
-            img.Mutate(q => q.AddWatermarkImage(watermarkImage,opacity,anchor,horizontalEdgeOffset,verticalEdgeOffset));
+            img.Mutate(q => q.AddWatermarkImage(watermarkImage, opacity, anchor, horizontalEdgeOffset, verticalEdgeOffset));
         }
+
+        /// <summary>
+        /// 为图像添加水印
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="watermarkImage">水印图像</param>
+        /// <param name="blendMode">混合类型</param>
+        /// <param name="blendPercentage">混合百分比，约等于不透明度，取值范围为0到1之间</param>
+        /// <param name="anchor">相对于源图像的方位锚点</param>
+        /// <param name="horizontalEdgeOffset">左侧或右侧的边距</param>
+        /// <param name="verticalEdgeOffset">上方或下方的边距</param>
+        public static void AddWatermarkImage<TPixel>(this Image<TPixel> img, Image<TPixel> watermarkImage, PixelBlenderMode blendMode, float blendPercentage, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset) where TPixel : struct, IPixel<TPixel>
+        {
+            img.Mutate(q => q.AddWatermarkImage(watermarkImage, blendMode, blendPercentage, anchor, horizontalEdgeOffset, verticalEdgeOffset));
+        }
+
 
         ///// <summary>
         ///// 为图像添加水印，并生成新的图像
