@@ -274,13 +274,14 @@ namespace SkyDCore.Drawing
         /// <param name="context">图像修改上下文</param>
         /// <param name="targetWidth">目标宽度</param>
         /// <param name="targetHeight">目标高度</param>
-        /// <param name="imageWidth">原图宽度</param>
-        /// <param name="imageHeight">原图高度</param>
         /// <param name="anchor">位置锚点</param>
         /// <param name="anchorEdgeOffset">锚点边缘偏移量</param>
         /// <returns>图像修改上下文</returns>
-        public static IImageProcessingContext<TPixel> CropByAnchorPosition<TPixel>(this IImageProcessingContext<TPixel> context, int targetWidth, int targetHeight, int imageWidth, int imageHeight, AnchorPositionMode anchor, int anchorEdgeOffset) where TPixel : struct, IPixel<TPixel>
+        public static IImageProcessingContext<TPixel> CropByAnchorPosition<TPixel>(this IImageProcessingContext<TPixel> context, int targetWidth, int targetHeight, AnchorPositionMode anchor, int anchorEdgeOffset) where TPixel : struct, IPixel<TPixel>
         {
+            var size = context.GetCurrentSize();
+            var imageWidth = size.Width;
+            var imageHeight = size.Height;
             int x = anchorEdgeOffset;
             int y = anchorEdgeOffset;
             switch (anchor)
@@ -333,7 +334,7 @@ namespace SkyDCore.Drawing
         /// <param name="anchorEdgeOffset">锚点边缘偏移量</param>
         public static void CropByAnchorPosition<TPixel>(this Image<TPixel> img, int targetWidth, int targetHeight, AnchorPositionMode anchor, int anchorEdgeOffset) where TPixel : struct, IPixel<TPixel>
         {
-            img.Mutate(q => q.CropByAnchorPosition(targetWidth, targetHeight, img.Width, img.Height, anchor, anchorEdgeOffset));
+            img.Mutate(q => q.CropByAnchorPosition(targetWidth, targetHeight, anchor, anchorEdgeOffset));
         }
 
         /// <summary>
@@ -357,19 +358,18 @@ namespace SkyDCore.Drawing
         /// <param name="context">图像修改上下文</param>
         /// <param name="horizontalRatioValue">横向比例</param>
         /// <param name="verticalRatioValue">纵向比例</param>
-        /// <param name="imageWidth">原图宽度</param>
-        /// <param name="imageHeight">原图高度</param>
         /// <returns>图像修改上下文</returns>
-        public static IImageProcessingContext<TPixel> CropToRatioSize<TPixel>(this IImageProcessingContext<TPixel> context, int horizontalRatioValue, int verticalRatioValue, int imageWidth, int imageHeigh) where TPixel : struct, IPixel<TPixel>
+        public static IImageProcessingContext<TPixel> CropToRatioSize<TPixel>(this IImageProcessingContext<TPixel> context, int horizontalRatioValue, int verticalRatioValue) where TPixel : struct, IPixel<TPixel>
         {
-            var w = imageWidth;
-            var h = (imageWidth * 1.0 / horizontalRatioValue * verticalRatioValue).FloorToInt();
-            if (h > imageHeigh)
+            var size = context.GetCurrentSize();
+            var w = size.Width;
+            var h = (size.Width * 1.0 / horizontalRatioValue * verticalRatioValue).FloorToInt();
+            if (h > size.Height)
             {
-                w = (imageHeigh * 1.0 / verticalRatioValue * horizontalRatioValue).FloorToInt();
-                h = imageHeigh;
+                w = (size.Height * 1.0 / verticalRatioValue * horizontalRatioValue).FloorToInt();
+                h = size.Height;
             }
-            context.CropByAnchorPosition(w, h,imageWidth,imageHeigh, AnchorPositionMode.Center, 0);
+            context.CropByAnchorPosition(w, h, AnchorPositionMode.Center, 0);
             return context;
         }
 
@@ -381,7 +381,75 @@ namespace SkyDCore.Drawing
         /// <param name="verticalRatioValue">纵向比例</param>
         public static void CropToRatioSize<TPixel>(this Image<TPixel> img, int horizontalRatioValue, int verticalRatioValue) where TPixel : struct, IPixel<TPixel>
         {
-            img.Mutate(q => q.CropToRatioSize(horizontalRatioValue, verticalRatioValue, img.Width, img.Height));
+            img.Mutate(q => q.CropToRatioSize(horizontalRatioValue, verticalRatioValue));
+        }
+
+        /// <summary>
+        /// 为图像添加水印
+        /// </summary>
+        /// <param name="context">图像修改上下文</param>
+        /// <param name="watermarkImage">水印图像</param>
+        /// <param name="opacity">不透明度，取值范围为0到1之间</param>
+        /// <param name="anchor">相对于源图像的方位锚点</param>
+        /// <param name="horizontalEdgeOffset">左侧或右侧的边距</param>
+        /// <param name="verticalEdgeOffset">上方或下方的边距</param>
+        /// <returns>图像修改上下文</returns>
+        public static IImageProcessingContext<TPixel> AddWatermarkImage<TPixel>(this IImageProcessingContext<TPixel> context, Image<TPixel> watermarkImage, float opacity, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset) where TPixel : struct, IPixel<TPixel>
+        {
+            var size = context.GetCurrentSize();
+            var x = horizontalEdgeOffset;
+            var y = verticalEdgeOffset;
+            switch (anchor)
+            {
+                case AnchorPositionMode.Center:
+                    x = size.Width / 2 - watermarkImage.Width / 2;
+                    y = size.Height / 2 - watermarkImage.Height / 2;
+                    break;
+                case AnchorPositionMode.Top:
+                    x = size.Width / 2 - watermarkImage.Width / 2;
+                    break;
+                case AnchorPositionMode.Bottom:
+                    x = size.Width / 2 - watermarkImage.Width / 2;
+                    y = size.Height - verticalEdgeOffset - watermarkImage.Height;
+                    break;
+                case AnchorPositionMode.Left:
+                    y = size.Height / 2 - watermarkImage.Height / 2;
+                    break;
+                case AnchorPositionMode.Right:
+                    x = size.Width - horizontalEdgeOffset - watermarkImage.Width;
+                    y = size.Height / 2 - watermarkImage.Height / 2;
+                    break;
+                case AnchorPositionMode.TopLeft:
+                    break;
+                case AnchorPositionMode.TopRight:
+                    x = size.Width - horizontalEdgeOffset - watermarkImage.Width;
+                    break;
+                case AnchorPositionMode.BottomRight:
+                    x = size.Width - horizontalEdgeOffset - watermarkImage.Width;
+                    y = size.Height - verticalEdgeOffset - watermarkImage.Height;
+                    break;
+                case AnchorPositionMode.BottomLeft:
+                    y = size.Height - verticalEdgeOffset - watermarkImage.Height;
+                    break;
+                default:
+                    break;
+            }
+            context.DrawImage(watermarkImage, opacity, new SixLabors.Primitives.Point(x, y));
+            return context;
+        }
+
+        /// <summary>
+        /// 为图像添加水印
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="watermarkImage">水印图像</param>
+        /// <param name="opacity">不透明度，取值范围为0到1之间</param>
+        /// <param name="anchor">相对于源图像的方位锚点</param>
+        /// <param name="horizontalEdgeOffset">左侧或右侧的边距</param>
+        /// <param name="verticalEdgeOffset">上方或下方的边距</param>
+        public static void AddWatermarkImage<TPixel>(this Image<TPixel> img, Image<TPixel> watermarkImage, float opacity, AnchorPositionMode anchor, int horizontalEdgeOffset, int verticalEdgeOffset) where TPixel : struct, IPixel<TPixel>
+        {
+            img.Mutate(q => q.AddWatermarkImage(watermarkImage,opacity,anchor,horizontalEdgeOffset,verticalEdgeOffset));
         }
 
         ///// <summary>
