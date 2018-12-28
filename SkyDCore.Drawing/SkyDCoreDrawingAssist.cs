@@ -213,7 +213,7 @@ namespace SkyDCore.Drawing
                     if (i == 0)
                     {
                         img.Mutate(t => t.AutoRotateByExif().Scale(0, targetHeight - edgeDistance * 2, ResizeMode.Pad, AnchorPositionMode.Center));
-                        fullImg = new Image<Rgba32>(new Configuration(), img.Width + edgeDistance * 2, targetHeight, backgroundColor);
+                        fullImg = new Image<Rgba32>(Configuration.Default, img.Width + edgeDistance * 2, targetHeight, backgroundColor);
                         fullImg.Mutate(q => q.DrawImage(new GraphicsOptions { Antialias = true }, img, new SixLabors.Primitives.Point(edgeDistance, edgeDistance)));
                     }
                     else
@@ -250,7 +250,7 @@ namespace SkyDCore.Drawing
                     if (i == 0)
                     {
                         img.Mutate(t => t.AutoRotateByExif().Scale(targetWidth - edgeDistance * 2, 0, ResizeMode.Pad, AnchorPositionMode.Center));
-                        fullImg = new Image<Rgba32>(new Configuration(), targetWidth, img.Height + edgeDistance * 2, backgroundColor);
+                        fullImg = new Image<Rgba32>(Configuration.Default, targetWidth, img.Height + edgeDistance * 2, backgroundColor);
                         fullImg.Mutate(q => q.DrawImage(new GraphicsOptions { Antialias = true }, img, new SixLabors.Primitives.Point(edgeDistance, edgeDistance)));
                     }
                     else
@@ -590,61 +590,76 @@ namespace SkyDCore.Drawing
             return b;
         }
 
-        //static Random rand = new Random();
+        static Random rand = new Random();
 
-        ///// <summary>
-        ///// 创建验证图片，并返回jpg格式文件的二进制数组形式
-        ///// </summary>
-        //public static byte[] 生成验证图片(string 验证码)
-        //{
-        //    int iwidth = (int)(验证码.Length * 16);
-        //    System.Drawing.Bitmap image = new System.Drawing.Bitmap(iwidth, 25);
-        //    Graphics g = Graphics.FromImage(image);
-        //    //背景颜色
-        //    g.Clear(Color.White);
-        //    //字符颜色 
-        //    Color[] c = { Color.Black, Color.Red, Color.DarkBlue, Color.Blue, Color.DarkGray, Color.Green, Color.OrangeRed, Color.Brown, Color.DarkCyan, Color.Purple };
-        //    //Color[] c = { Color.Black, Color.DarkBlue, Color.DarkGray, Color.OrangeRed, Color.Brown, Color.DarkCyan };
-        //    //Color[] c = { Color.FromArgb(208, 213, 216) };
-        //    //定义字体         
-        //    string[] font = { "Verdana", "Microsoft Sans Serif", "Comic Sans MS", "Arial", "Tahoma", "黑体", "幼圆", "宋体" };
-        //    //string[] font = { "Arial", "黑体" };
-        //    var C = c[rand.Next(c.Length)];
-        //    //随机输出噪点 
-        //    for (int i = 0; i < 32; i++)
-        //    {
-        //        int x = rand.Next(image.Width);
-        //        int y = rand.Next(image.Height);
-        //        g.DrawRectangle(new Pen(C, 0), x, y, 1, 1);
-        //    }
-
-        //    //输出验证码字符 
-        //    for (int i = 0; i < 验证码.Length; i++)
-        //    {
-        //        //int cindex = rand.Next(c.Length);
-        //        int findex = rand.Next(font.Length);
-
-        //        Font f = new System.Drawing.Font(font[findex], 13, System.Drawing.FontStyle.Bold);
-        //        Brush b = new System.Drawing.SolidBrush(C);
-        //        int ii = 2;
-        //        if ((i + 1) % 2 == 0)
-        //        {
-        //            ii = 2;
-        //        }
-        //        g.DrawString(验证码.Substring(i, 1), f, b, 3 + (i * 15), ii);
-        //    }
-        //    //画一个边框 
-        //    g.DrawRectangle(new Pen(C, 0), 0, 0, image.Width - 1, image.Height - 1);
-
-        //    //输出到浏览器 
-        //    System.IO.MemoryStream ms = new System.IO.MemoryStream();
-        //    image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-        //    var o = ms.ToArray();
-        //    g.Dispose();
-        //    image.Dispose();
-        //    ms.Close();
-        //    return o;
-        //}
+        public static Image<Rgb24> CreateVerificationCode(string code, Font font, int width, int height)
+        {
+            var img = new Image<Rgb24>(Configuration.Default, width, height, new Rgb24(255, 255, 255));
+            var options = new GraphicsOptions(true) { BlenderMode = PixelBlenderMode.Darken, BlendPercentage = 0.7f };
+            var textOptions = new TextGraphicsOptions(true) { BlenderMode = PixelBlenderMode.Darken, BlendPercentage = 0.7f, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+            img.Mutate(q =>
+            {
+                for (int i = 0; i < rand.Next(3, 6); i++)
+                {
+                    q.DrawBeziers(
+                        options,
+                        new Rgb24((byte)rand.Next(128, 255), (byte)rand.Next(128, 255), (byte)rand.Next(128, 255)),
+                        (float)(rand.NextDouble() * 3),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height)),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height)),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height)),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height))
+                    );
+                }
+                for (int i = 0; i < rand.Next(3, 6); i++)
+                {
+                    q.DrawLines(
+                        options,
+                        new Rgb24((byte)rand.Next(128, 255), (byte)rand.Next(128, 255), (byte)rand.Next(128, 255)),
+                        (float)(rand.NextDouble() * 3),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height)),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height)),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height)),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height))
+                    );
+                }
+                for (int i = 0; i < code.Length; i++)
+                {
+                    q.DrawText(
+                        textOptions,
+                        code[i].ToString(),
+                        font,
+                        new Rgb24((byte)rand.Next(0, 128), (byte)rand.Next(0, 128), (byte)rand.Next(0, 128)),
+                        new SixLabors.Primitives.PointF((i + 1.5f) * (width * 1.0f / (code.Length + 2)), rand.Next(font.Size.RoundToInt() / 2, height - font.Size.RoundToInt() /2))
+                        );
+                }
+                for (int i = 0; i < rand.Next(1, 3); i++)
+                {
+                    q.DrawBeziers(
+                        options,
+                        new Rgb24((byte)rand.Next(128, 255), (byte)rand.Next(128, 255), (byte)rand.Next(128, 255)),
+                        (float)(rand.NextDouble() * 3),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height)),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height)),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height)),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height))
+                    );
+                }
+                for (int i = 0; i < rand.Next(1, 3); i++)
+                {
+                    q.DrawLines(
+                        options,
+                        new Rgb24((byte)rand.Next(128, 255), (byte)rand.Next(128, 255), (byte)rand.Next(128, 255)),
+                        (float)(rand.NextDouble() * 3),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height)),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height)),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height)),
+                        new SixLabors.Primitives.PointF((float)(rand.NextDouble() * width), (float)(rand.NextDouble() * height))
+                    );
+                }
+            });
+            return img;
+        }
 
         public static bool 验证矩形区域是否包含坐标点(this System.Drawing.Rectangle 矩形, System.Drawing.Point 坐标点)
         {
