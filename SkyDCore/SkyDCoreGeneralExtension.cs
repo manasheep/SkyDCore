@@ -870,7 +870,7 @@ public static class SkyDCoreGeneralExtension
     }
 
     /// <summary>
-    /// 判断值是否结语两值之间
+    /// 判断值是否介于两值之间
     /// </summary>
     public static bool IsBetween<T>(this T t, T min, T max, bool includeMin, bool includeMax)
         where T : IComparable<T>
@@ -886,7 +886,7 @@ public static class SkyDCoreGeneralExtension
     }
 
     /// <summary>
-    /// 判断值是否结语两值之间（与两值中的任意一个相等也返回true）
+    /// 判断值是否结介于值之间（与两值中的任意一个相等也返回true）
     /// </summary>
     public static bool IsBetween<T>(this T t, T min, T max) where T : IComparable<T>
     {
