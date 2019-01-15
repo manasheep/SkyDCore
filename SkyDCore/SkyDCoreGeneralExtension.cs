@@ -1942,6 +1942,28 @@ backgroundWorker.RunWorkerAsync(parm);
     }
 
     /// <summary>
+    /// 逆转集合项顺序
+    /// </summary>
+    /// <typeparam name="T">排序对象类型</typeparam>
+    /// <param name="list">列表</param>
+    public static void Reverse<T>(this IList<T> list)
+    {
+        ArrayList.Adapter((IList)list).Reverse();
+    }
+
+    /// <summary>
+    /// 逆转集合中的部分项的顺序
+    /// </summary>
+    /// <typeparam name="T">排序对象类型</typeparam>
+    /// <param name="list">列表</param>
+    /// <param name="index">起始索引位置</param>
+    /// <param name="count">囊括项目数量</param>
+    public static void Reverse<T>(this IList<T> list, int index, int count)
+    {
+        ArrayList.Adapter((IList)list).Reverse(index, count);
+    }
+
+    /// <summary>
     /// 排序，并返回经过排序的新集合
     /// </summary>
     /// <typeparam name="T">排序对象类型</typeparam>
