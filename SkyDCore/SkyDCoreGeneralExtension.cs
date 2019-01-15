@@ -1914,6 +1914,60 @@ backgroundWorker.RunWorkerAsync(parm);
         fs.Close();
     }
 
+    #region 集合排序
+    /// <summary>
+    /// 对集合进行排序
+    /// </summary>
+    /// <typeparam name="T">排序对象类型</typeparam>
+    /// <param name="list">列表</param>
+    /// <param name="comparison">比较方式代理，可以传入Lambda表达式，表达式返回一个int值，两相比较时值越小排名越靠前</param>
+    /// <example>
+    /// <code>
+    /// PageCollection.Sort((s1, s2) =>
+    /// {
+    ///     var s1a = s1.FileName.ToCharArray();
+    ///     var s2a = s2.FileName.ToCharArray();
+    ///     for (int i = 0; i &lt; Math.Min(s1a.Length, s2a.Length); i++)
+    ///     {
+    ///         var r = s1a[i] - s2a[i];
+    ///         if (r != 0) return r;
+    ///     }
+    ///     return 0;
+    /// });
+    /// </code>
+    /// </example>
+    public static void Sort<T>(this IList<T> list, Comparison<T> comparison)
+    {
+        ArrayList.Adapter((IList)list).Sort(new ComparisonComparer<T>(comparison));
+    }
+
+    /// <summary>
+    /// 排序，并返回经过排序的新集合
+    /// </summary>
+    /// <typeparam name="T">排序对象类型</typeparam>
+    /// <param name="list">列表</param>
+    /// <param name="comparison">比较方式代理，可以传入Lambda表达式，表达式返回一个int值，两相比较时值越小排名越靠前</param>
+    /// <example>
+    /// <code>
+    /// PageCollection.Sort((s1, s2) =>
+    /// {
+    ///     var s1a = s1.FileName.ToCharArray();
+    ///     var s2a = s2.FileName.ToCharArray();
+    ///     for (int i = 0; i &lt; Math.Min(s1a.Length, s2a.Length); i++)
+    ///     {
+    ///         var r = s1a[i] - s2a[i];
+    ///         if (r != 0) return r;
+    ///     }
+    ///     return 0;
+    /// });
+    /// </code>
+    /// <returns>经过排序的集合</returns>
+    public static IEnumerable<T> OrderBy<T>(this IEnumerable<T> list, Comparison<T> comparison)
+    {
+        return list.OrderBy(t => t, new ComparisonComparer<T>(comparison));
+    }
+    #endregion
+
     #region 链式SwitchCase
 
     /// <summary>
