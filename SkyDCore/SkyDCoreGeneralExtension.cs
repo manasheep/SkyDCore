@@ -24,6 +24,129 @@ public static class SkyDCoreGeneralExtension
     static Random R = new Random();
 
     /// <summary>
+    /// 转换为数组
+    /// </summary>
+    /// <param name="list">列表</param>
+    /// <returns>数组</returns>
+    public static object[] ToArray(this IList list)
+    {
+        return list.Cast<object>().ToArray();
+    }
+
+    /// <summary>
+    /// 转换为数组
+    /// </summary>
+    /// <typeparam name="T">泛型类型</typeparam>
+    /// <param name="list">列表</param>
+    /// <returns>数组</returns>
+    public static T[] ToArray<T>(this IList<T> list)
+    {
+        return list.Cast<T>().ToArray();
+    }
+
+    /// <summary>
+    /// 转换为列表
+    /// </summary>
+    /// <param name="list">列表</param>
+    /// <returns>列表</returns>
+    public static List<object> ToList(this IList list)
+    {
+        return list.Cast<object>().ToList();
+    }
+
+    /// <summary>
+    /// 转换为列表
+    /// </summary>
+    /// <typeparam name="T">泛型类型</typeparam>
+    /// <param name="list">列表</param>
+    /// <returns>列表</returns>
+    public static List<T> ToList<T>(this IList<T> list)
+    {
+        return list.Cast<T>().ToList();
+    }
+
+    /// <summary>
+    /// 交换两个项的位置
+    /// </summary>
+    /// <param name="list">列表</param>
+    /// <param name="indexA">项A的索引位置</param>
+    /// <param name="indexB">项B的索引位置</param>
+    public static void Interchange(this IList list, int indexA, int indexB)
+    {
+        var temp = list[indexA];
+        list[indexA] = list[indexB];
+        list[indexB] = temp;
+    }
+
+    /// <summary>
+    /// 将指定项前移
+    /// </summary>
+    /// <param name="list">列表</param>
+    /// <param name="item">项对象</param>
+    /// <returns>如果改变了位置，则返回新的位置索引，否则返回null</returns>
+    public static int? MovePrevious(this IList list, object item)
+    {
+        var index = list.IndexOf(item);
+        if (index > 0)
+        {
+            list.Interchange(index, index - 1);
+            return index - 1;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 将指定项后移
+    /// </summary>
+    /// <param name="list">列表</param>
+    /// <param name="item">项对象</param>
+    /// <returns>如果改变了位置，则返回新的位置索引，否则返回null</returns>
+    public static int? MoveNext(this IList list, object item)
+    {
+        var index = list.IndexOf(item);
+        if (index < list.Count - 1)
+        {
+            list.Interchange(index, index + 1);
+            return index + 1;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 将指定项移到最前端
+    /// </summary>
+    /// <param name="list">列表</param>
+    /// <param name="item">项对象</param>
+    /// <returns>如果改变了位置，则返回新的位置索引，否则返回null</returns>
+    public static int? MoveToBegin(this IList list, object item)
+    {
+        var index = list.IndexOf(item);
+        if (index > 0)
+        {
+            list.Interchange(index, 0);
+            return 0;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 将指定项移到最末端
+    /// </summary>
+    /// <param name="list">列表</param>
+    /// <param name="item">项对象</param>
+    /// <returns>如果改变了位置，则返回新的位置索引，否则返回null</returns>
+    public static int? MoveToEnd(this IList list, object item)
+    {
+        var index = list.IndexOf(item);
+        if (index < list.Count - 1)
+        {
+            list.Interchange(index, list.Count - 1);
+            return list.Count - 1;
+        }
+        return null;
+    }
+
+    /// <summary>
     /// 将对象的公共属性值映射到另一个对象，可以是不同类型但具有相同字段名称的目标对象
     /// </summary>
     /// <typeparam name="TIn">源类型</typeparam>
