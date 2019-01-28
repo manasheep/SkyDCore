@@ -24,6 +24,16 @@ public static class SkyDCoreGeneralExtension
     static Random R = new Random();
 
     /// <summary>
+    /// 返回常规格式化的GUID字符串（即不含“-”的形式）
+    /// </summary>
+    /// <param name="guid">Guid</param>
+    /// <returns>常规格式化的GUID字符串</returns>
+    public static string ToStringN(this Guid guid)
+    {
+        return guid.ToString("N");
+    }
+
+    /// <summary>
     /// 转换为数组
     /// </summary>
     /// <param name="list">列表</param>
@@ -49,7 +59,7 @@ public static class SkyDCoreGeneralExtension
     /// </summary>
     /// <param name="list">列表</param>
     /// <returns>列表</returns>
-    public static List<object> ToList(this IList list)
+    public static List<object> ConvertToObjectList(this IList list)
     {
         return list.Cast<object>().ToList();
     }
@@ -60,7 +70,7 @@ public static class SkyDCoreGeneralExtension
     /// <typeparam name="T">泛型类型</typeparam>
     /// <param name="list">列表</param>
     /// <returns>列表</returns>
-    public static List<T> ToList<T>(this IList<T> list)
+    public static List<T> ConvertToList<T>(this IList<T> list)
     {
         return list.Cast<T>().ToList();
     }
@@ -1052,7 +1062,7 @@ public static class SkyDCoreGeneralExtension
     /// <summary>
     /// 转换为List对象
     /// </summary>
-    public static List<T> ToList<T>(this IEnumerable<T> source)
+    public static List<T> ConvertToList<T>(this IEnumerable<T> source)
     {
         var l = new List<T>();
         foreach (var f in source)
