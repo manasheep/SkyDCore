@@ -1617,6 +1617,26 @@ backgroundWorker.RunWorkerAsync(parm);
     }
 
     /// <summary>
+    /// 获取枚举的全部值数组
+    /// </summary>
+    /// <param name="o">枚举值</param>
+    /// <returns>全部值的数组</returns>
+    public static Array GetAllEnumValues(this Enum o)
+    {
+        return Enum.GetValues(o.GetType());
+    }
+
+    /// <summary>
+    /// 验证枚举的值是否是已定义的
+    /// </summary>
+    /// <param name="o">枚举值</param>
+    /// <returns>是否已定义</returns>
+    public static bool CheckIsDefined(this Enum o)
+    {
+        return Enum.IsDefined(o.GetType(), o);
+    }
+
+    /// <summary>
     /// 转换为异步编程模型（Asynchronous Programming Model），用于WF的AsyncCodeActivity中的BeginExecute方法中使用，如果不进行此转换，通常就会因不包含AsyncState属性而引发InvalidOperationException
     /// 代码源自：http://tweetycodingxp.blogspot.jp/2013/06/using-task-based-asynchronous-pattern.html
     /// </summary>
