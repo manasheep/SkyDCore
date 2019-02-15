@@ -11,7 +11,7 @@ this.GetLogger().Info("程序启动");
 
 ## 配置文件（log4net.config）范例
 
-```
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
   <!-- This section contains the log4net configuration settings -->
@@ -73,4 +73,38 @@ this.GetLogger().Info("程序启动");
     </root>
   </log4net>
 </configuration>
+```
+
+## 在 ASP.Net Core 中捕获全局异常的范例
+
+自定义全局异常过滤器：
+
+```c#
+using Microsoft.AspNetCore.Mvc.Filters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace DataExchangeCenter.WebSite.Filters
+{
+    /// <summary>
+    /// 全局异常过滤器
+    /// </summary>
+    public class GlobalExceptionFilter : IExceptionFilter
+    {
+        public void OnException(ExceptionContext context)
+        {
+            this.GetLogger().Error("全局异常过滤器捕获的异常", context.Exception);
+        }
+    }
+}
+```
+在 Startup.cs 中的 ConfigureServices 方法里启用该过滤器：
+```c#
+// 添加全局异常过滤器
+services.AddMvc(option =>
+{
+    option.Filters.Add<Filters.GlobalExceptionFilter>();
+});
 ```
