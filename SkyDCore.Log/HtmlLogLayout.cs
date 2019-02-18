@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using log4net.Core;
+using SkyDCore.Web;
 
 namespace SkyDCore.Log
 {
@@ -59,9 +60,9 @@ dynamicLoadCss();
             string exception = null;
             if (loggingEvent.ExceptionObject != null)
             {
-                exception = $"<pre class=\"text-danger\"><code>{System.Web.HttpUtility.HtmlEncode(loggingEvent.ExceptionObject.ToString())}</code></pre>";
+                exception = $"<pre class=\"text-danger\"><code>{SkyDCoreWebAssist.HtmlEscaping(loggingEvent.ExceptionObject.ToString())}</code></pre>";
             }
-            writer.Write($"<div style=\"word-break:break-all;margin:8px;\" class=\"alert alert-{bgType}\" role=\"alert\"><strong class=\"text-{textType}\">{loggingEvent.Level}</strong> <span>#{DateTime.Now.ToFileTime()}{++_Id}</span> <strong>{loggingEvent.LoggerName}</strong> [{loggingEvent.ThreadName}] <span class=\"text-muted\">{loggingEvent.TimeStamp:yyyy-MM-dd tthh:mm:ss,fff}</span><br/><span>{System.Web.HttpUtility.HtmlEncode(loggingEvent.MessageObject.ToString())}</span>{exception}</div>");
+            writer.Write($"<div style=\"word-break:break-all;margin:8px;\" class=\"alert alert-{bgType}\" role=\"alert\"><strong class=\"text-{textType}\">{loggingEvent.Level}</strong> <span>#{DateTime.Now.ToFileTime()}{++_Id}</span> <strong>{loggingEvent.LoggerName}</strong> [{loggingEvent.ThreadName}] <span class=\"text-muted\">{loggingEvent.TimeStamp:yyyy-MM-dd tthh:mm:ss,fff}</span><br/><span>{SkyDCoreWebAssist.HtmlEscaping(loggingEvent.MessageObject.ToString())}</span>{exception}</div>");
         }
     }
 }
