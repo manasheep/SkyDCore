@@ -32,10 +32,13 @@ public static class Log4NetExtension
 
     public static ILog GetLogger(this Type t)
     {
-        if (_LoggerDic.Keys.Contains(t)) return _LoggerDic[t];
-        var log = LogManager.GetLogger(_Repository.Name, t);
-        _LoggerDic.Add(t, log);
-        return log;
+        lock (_LoggerDic)
+        {
+            if (_LoggerDic.Keys.Contains(t)) return _LoggerDic[t];
+            var log = LogManager.GetLogger(_Repository.Name, t);
+            _LoggerDic.Add(t, log);
+            return log;
+        }
     }
 
     /// <summary>
