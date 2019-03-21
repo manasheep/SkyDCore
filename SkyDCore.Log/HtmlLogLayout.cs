@@ -7,10 +7,13 @@ using SkyDCore.Web;
 
 namespace SkyDCore.Log
 {
+    /// <summary>
+    /// HTML日志
+    /// </summary>
     public class HtmlLogLayout : log4net.Layout.LayoutSkeleton
     {
         private static int _Id;
-        private static string _Script => @"
+        protected virtual string _Script => @"
 <script type=""text/javascript"">
 function dynamicLoadCss() {
         var head = document.getElementsByTagName('head')[0];
