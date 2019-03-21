@@ -131,7 +131,8 @@ namespace SkyDCore.IO
         /// <returns>内容</returns>
         public static string ReadFile(string filePath, Encoding encoding)
         {
-            var s = new StreamReader(filePath, encoding);
+            var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            var s = new StreamReader(fs, encoding);
             var t = s.ReadToEnd();
             s.Close();
             return t;
