@@ -11,6 +11,8 @@ this.GetLogger().Info("程序启动");
 
 ## 配置文件（log4net.config）范例
 
+注意：此文件的输出设置要设为“如果较新则复制”。
+
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
