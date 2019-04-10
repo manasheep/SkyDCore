@@ -24,6 +24,18 @@ public static class SkyDCoreGeneralExtension
     static Random R = new Random();
 
     /// <summary>
+    /// 转换为可枚举集合
+    /// </summary>
+    /// <typeparam name="T">集合类型</typeparam>
+    /// <param name="enumerator">枚举器</param>
+    /// <returns>可枚举集合</returns>
+    public static IEnumerable<T> ToEnumerable<T>(this IEnumerator<T> enumerator)
+    {
+        while (enumerator.MoveNext())
+            yield return enumerator.Current;
+    }
+
+    /// <summary>
     /// 返回常规格式化的GUID字符串（即不含“-”的形式）
     /// </summary>
     /// <param name="guid">Guid</param>
