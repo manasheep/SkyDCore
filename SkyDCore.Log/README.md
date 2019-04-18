@@ -110,3 +110,33 @@ services.AddMvc(option =>
     option.Filters.Add<Filters.GlobalExceptionFilter>();
 });
 ```
+
+## 在 WPF 中捕获全局异常的范例
+
+修改 App.xaml.cs 文件：
+
+```C#
+        public App()
+        {
+            // 设置日志记录全局异常
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        /// <summary>
+        /// 当某个异常未被捕获时出现。主要指的是非UI线程。
+        /// </summary>
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Log.Error($"触发未捕获异常（{nameof(CurrentDomain_UnhandledException)}）", (Exception)e.ExceptionObject);
+        }
+
+        /// <summary>
+        /// 如果异常是由应用程序引发，但未处理，发生。主要指的是UI线程。
+        /// </summary>
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            e.Handled = true;
+            Log.Error($"触发未处理异常（{nameof(App_DispatcherUnhandledException)}）", e.Exception);
+        }
+```
