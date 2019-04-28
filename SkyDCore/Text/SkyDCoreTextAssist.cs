@@ -99,6 +99,17 @@ namespace SkyDCore.Text
         }
 
         /// <summary>
+        /// 比对两个字符串的相似度，返回差异百分比，数值越高代表差异越大。对比机制使用的是CalculateSimilarity方法的机制。
+        /// </summary>
+        /// <param name="source">原始字符串</param>
+        /// <param name="target">用于对比的字符串</param>
+        /// <returns>差异百分比，数值越高代表差异越大</returns>
+        public static double CalculateSimilarityToPercentage(this string source, string target)
+        {
+            return CalculateSimilarity(source, target) * 1.0 / (source.Length + target.Length);
+        }
+
+        /// <summary>
         /// 查找字符串内是否包含指定字符
         /// </summary>
         /// <param name="source">要在其中进行查找的源字符串</param>
