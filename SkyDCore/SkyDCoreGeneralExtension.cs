@@ -1072,6 +1072,19 @@ public static class SkyDCoreGeneralExtension
     }
 
     /// <summary>
+    /// 循环
+    /// </summary>
+    /// <param name="count">循环次数</param>
+    /// <param name="action">操作表达式，参数为从0开始的循环计数</param>
+    public static void For(this int count, Action<int> action)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            action.Invoke(i);
+        }
+    }
+
+    /// <summary>
     /// 转换为List对象
     /// </summary>
     public static List<T> ConvertToList<T>(this IEnumerable<T> source)
