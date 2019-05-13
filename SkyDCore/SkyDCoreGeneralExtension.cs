@@ -1642,6 +1642,17 @@ backgroundWorker.RunWorkerAsync(parm);
     }
 
     /// <summary>
+    /// 获取枚举的整数值
+    /// </summary>
+    /// <typeparam name="T">枚举类型</typeparam>
+    /// <param name="o">枚举值</param>
+    /// <returns>整数值</returns>
+    public static int GetIntValue<T>(this T o) where T : Enum
+    {
+        return Convert.ToInt32(o);
+    }
+
+    /// <summary>
     /// 获取枚举的全部值数组
     /// </summary>
     /// <param name="o">枚举值</param>
@@ -1649,6 +1660,17 @@ backgroundWorker.RunWorkerAsync(parm);
     public static Array GetAllEnumValues(this Enum o)
     {
         return Enum.GetValues(o.GetType());
+    }
+
+    /// <summary>
+    /// 获取枚举的全部值列表
+    /// </summary>
+    /// <typeparam name="T">枚举类型</typeparam>
+    /// <param name="o">枚举值</param>
+    /// <returns>全部值列表</returns>
+    public static List<T> GetAllEnumValueList<T>(this T o) where T:Enum
+    {
+        return Enum.GetValues(o.GetType()).Cast<T>().ToList();
     }
 
     /// <summary>

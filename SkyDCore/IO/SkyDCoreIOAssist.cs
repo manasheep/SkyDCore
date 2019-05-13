@@ -22,6 +22,17 @@ namespace SkyDCore.IO
     public static class SkyDCoreIOAssist
     {
         /// <summary>
+        /// 将字符串转化为内存流
+        /// </summary>
+        /// <param name="s">字符串</param>
+        /// <param name="encoding">编码</param>
+        /// <returns>内存流</returns>
+        public static MemoryStream ToMemoryStream(this string s,Encoding encoding)
+        {
+            return new MemoryStream(encoding.GetBytes(s));
+        }
+
+        /// <summary>
         /// 计算文件的MD5值
         /// </summary>
         /// <param name="filePath">文件存放路径</param>
