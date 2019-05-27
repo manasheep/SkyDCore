@@ -61,7 +61,7 @@ namespace SkyDCore.Environment
         }
 
         /// <summary>
-        /// 获得系统启动目录的路径
+        /// 获得系统启动目录的路径（添加到其中的程序会开机自启动）
         /// </summary>
         public static string StartupDirectory
         {

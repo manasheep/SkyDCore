@@ -15,6 +15,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Threading;
 using SkyDCore.Encryption;
+using System.Collections.ObjectModel;
 
 /// <summary>
 /// 通用扩展
@@ -22,6 +23,23 @@ using SkyDCore.Encryption;
 public static class SkyDCoreGeneralExtension
 {
     static Random R = new Random();
+
+    /// <summary>
+    /// 转换为可观察集合
+    /// </summary>
+    /// <typeparam name="T">集合类型</typeparam>
+    /// <param name="enumerable">可枚举集合</param>
+    /// <returns>可观察集合</returns>
+    public static ObservableCollection<T> ToObservableCollection<T>(this IEnumerable<T> enumerable)
+    {
+        ObservableCollection<T> list = new ObservableCollection<T>();
+        if (enumerable == null) return list;
+        foreach (var data in enumerable)
+        {
+            list.Add(data);
+        }
+        return list;
+    }
 
     /// <summary>
     /// 转换为可枚举集合
