@@ -11,13 +11,23 @@ public static class Log4NetExtension
 {
     static Log4NetExtension()
     {
-        _Repository = LogManager.CreateRepository("SkyDCoreLogRepository");
+        Init("SkyDCoreLogRepository", "log4net.config");
+    }
+
+    /// <summary>
+    /// 初始化。通常不需要手动调用该方法，但在传统ASP.net网站中，需要手动调用，并传入一个新的名称，以及使用Server.MapPath("log4net.config")作为文件路径。
+    /// </summary>
+    /// <param name="name">存储仓库名称</param>
+    /// <param name="filepath">配置文件路径。在传统ASP.net网站中，通常使用Server.MapPath("log4net.config")作为文件路径。</param>
+    public static void Init(string name, string filepath)
+    {
+        _Repository = LogManager.CreateRepository(name);
         //从config文件中加载Log4net日志配置
-        log4net.Config.XmlConfigurator.Configure(_Repository, new FileInfo("log4net.config"));
+        log4net.Config.XmlConfigurator.Configure(_Repository, new FileInfo(filepath));
         _LoggerDic = new Dictionary<Type, ILog>();
     }
 
-    public static ILoggerRepository _Repository { get; }
+    public static ILoggerRepository _Repository { get; private set; }
     private static Dictionary<Type, ILog> _LoggerDic { get; set; }
 
     public static ILog GetLogger(this object o)

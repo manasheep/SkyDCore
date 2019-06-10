@@ -77,6 +77,16 @@ this.GetLogger().Info("程序启动");
 </configuration>
 ```
 
+## 传统 ASP.Net 网站特殊的初始化方式
+
+在传统 ASP.net 网站中，应当在 Global.asax 里的 Application_Start 方法中手动进行一次初始化：
+
+```c#
+Log4NetExtension.Init("MyWebSite",Server.MapPath("log4net.config"));
+```
+
+若不这么做，就无法正确读取配置文件，继而导致无法记录日志。
+
 ## 在 ASP.Net Core 中捕获全局异常的范例
 
 自定义全局异常过滤器：
