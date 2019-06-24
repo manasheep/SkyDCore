@@ -53,7 +53,7 @@ namespace SkyDCore.Text
         /// <summary>
         /// 电子邮件地址格式正则匹配代码
         /// </summary>
-        public const string EmailFormatRegularExpressions = @"[a-zA-Z0-9_\.]+@[a-zA-Z0-9\-_\.]{1,16}\.(cn|com|net|org|biz|name|info|tw|hk)";
+        public const string EmailFormatRegularExpressions = @"[a-zA-Z0-9][a-zA-Z_0-9.-]{0,63}@([a-zA-Z0-9-]{1,200}\.){1,5}[a-zA-Z]{1,6}";
         /// <summary>
         /// 超文本协议地址格式正则匹配代码
         /// </summary>
