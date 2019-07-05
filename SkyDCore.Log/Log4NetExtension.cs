@@ -54,9 +54,10 @@ public static class Log4NetExtension
     /// <summary>
     /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Debug日志，并将该对象返回
     /// </summary>
+    /// <param name="t">目标对象</param>
     public static T TraceAndLog<T>(this T t)
     {
-        GetLogger().Debug($"[Trace] {t}");
+        GetLogger().Debug($"{t}");
         System.Diagnostics.Trace.WriteLine(t == null ? "[Null]" : t.ToString());
         return t;
     }
@@ -64,10 +65,12 @@ public static class Log4NetExtension
     /// <summary>
     /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Debug日志，并将该对象返回
     /// </summary>
+    /// <param name="t">目标对象</param>
+    /// <param name="func">从目标对象中获取日志信息的方法</param>
     public static T TraceAndLog<T>(this T t, Func<T, object> func)
     {
         var o = func(t);
-        GetLogger().Debug($"[Trace] {o}");
+        GetLogger().Debug($"{o}");
         System.Diagnostics.Trace.WriteLine(o == null ? "[Null]" : o.ToString());
         return t;
     }
@@ -75,10 +78,176 @@ public static class Log4NetExtension
     /// <summary>
     /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Debug日志，并将该对象返回
     /// </summary>
+    /// <param name="t">目标对象</param>
+    /// <param name="category">分类</param>
     public static T TraceAndLog<T>(this T t, string category)
     {
-        GetLogger().Debug($"[Trace] ({category}) {t}");
+        GetLogger().Debug($"({category}) {t}");
         System.Diagnostics.Trace.WriteLine(t == null ? "[Null]" : t.ToString(), category);
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Debug日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    /// <param name="func">从目标对象中获取日志信息的方法</param>
+    /// <param name="category">分类</param>
+    public static T TraceAndLog<T>(this T t, Func<T, object> func, string category)
+    {
+        var o = func(t);
+        GetLogger().Debug($"({category}) {o}");
+        System.Diagnostics.Trace.WriteLine(o == null ? "[Null]" : o.ToString(), category);
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Info日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    public static T TraceAndLogInfo<T>(this T t)
+    {
+        GetLogger().Info($"{t}");
+        System.Diagnostics.Trace.WriteLine(t == null ? "[Null]" : t.ToString());
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Info日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    /// <param name="func">从目标对象中获取日志信息的方法</param>
+    public static T TraceAndLogInfo<T>(this T t, Func<T, object> func)
+    {
+        var o = func(t);
+        GetLogger().Info($"{o}");
+        System.Diagnostics.Trace.WriteLine(o == null ? "[Null]" : o.ToString());
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Info日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    /// <param name="category">分类</param>
+    public static T TraceAndLogInfo<T>(this T t, string category)
+    {
+        GetLogger().Info($"({category}) {t}");
+        System.Diagnostics.Trace.WriteLine(t == null ? "[Null]" : t.ToString(), category);
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Info日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    /// <param name="func">从目标对象中获取日志信息的方法</param>
+    /// <param name="category">分类</param>
+    public static T TraceAndLogInfo<T>(this T t, Func<T, object> func, string category)
+    {
+        var o = func(t);
+        GetLogger().Info($"({category}) {o}");
+        System.Diagnostics.Trace.WriteLine(o == null ? "[Null]" : o.ToString(), category);
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Error日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    public static T TraceAndLogError<T>(this T t)
+    {
+        GetLogger().Error($"{t}");
+        System.Diagnostics.Trace.WriteLine(t == null ? "[Null]" : t.ToString());
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Error日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    /// <param name="func">从目标对象中获取日志信息的方法</param>
+    public static T TraceAndLogError<T>(this T t, Func<T, object> func)
+    {
+        var o = func(t);
+        GetLogger().Error($"{o}");
+        System.Diagnostics.Trace.WriteLine(o == null ? "[Null]" : o.ToString());
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Error日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    /// <param name="category">分类</param>
+    public static T TraceAndLogError<T>(this T t, string category)
+    {
+        GetLogger().Error($"({category}) {t}");
+        System.Diagnostics.Trace.WriteLine(t == null ? "[Null]" : t.ToString(), category);
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Error日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    /// <param name="func">从目标对象中获取日志信息的方法</param>
+    /// <param name="category">分类</param>
+    public static T TraceAndLogError<T>(this T t, Func<T, object> func, string category)
+    {
+        var o = func(t);
+        GetLogger().Error($"({category}) {o}");
+        System.Diagnostics.Trace.WriteLine(o == null ? "[Null]" : o.ToString(), category);
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Warn日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    public static T TraceAndLogWarn<T>(this T t)
+    {
+        GetLogger().Warn($"{t}");
+        System.Diagnostics.Trace.WriteLine(t == null ? "[Null]" : t.ToString());
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Warn日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    /// <param name="func">从目标对象中获取日志信息的方法</param>
+    public static T TraceAndLogWarn<T>(this T t, Func<T, object> func)
+    {
+        var o = func(t);
+        GetLogger().Warn($"{o}");
+        System.Diagnostics.Trace.WriteLine(o == null ? "[Null]" : o.ToString());
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Warn日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    /// <param name="category">分类</param>
+    public static T TraceAndLogWarn<T>(this T t, string category)
+    {
+        GetLogger().Warn($"({category}) {t}");
+        System.Diagnostics.Trace.WriteLine(t == null ? "[Null]" : t.ToString(), category);
+        return t;
+    }
+
+    /// <summary>
+    /// 将对象的字符串形式输出到调试输出窗口中，然后通过Log4Net记录Warn日志，并将该对象返回
+    /// </summary>
+    /// <param name="t">目标对象</param>
+    /// <param name="func">从目标对象中获取日志信息的方法</param>
+    /// <param name="category">分类</param>
+    public static T TraceAndLogWarn<T>(this T t, Func<T, object> func, string category)
+    {
+        var o = func(t);
+        GetLogger().Warn($"({category}) {o}");
+        System.Diagnostics.Trace.WriteLine(o == null ? "[Null]" : o.ToString(), category);
         return t;
     }
 }
