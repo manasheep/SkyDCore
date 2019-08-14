@@ -138,7 +138,7 @@ services.AddMvc(option =>
         /// </summary>
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Log.Error($"触发未捕获异常（{nameof(CurrentDomain_UnhandledException)}）", (Exception)e.ExceptionObject);
+            this.GetLogger().Error($"触发未捕获异常（{nameof(CurrentDomain_UnhandledException)}）", (Exception)e.ExceptionObject);
         }
 
         /// <summary>
@@ -147,6 +147,6 @@ services.AddMvc(option =>
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
-            Log.Error($"触发未处理异常（{nameof(App_DispatcherUnhandledException)}）", e.Exception);
+            this.GetLogger().Error($"触发未处理异常（{nameof(App_DispatcherUnhandledException)}）", e.Exception);
         }
 ```
