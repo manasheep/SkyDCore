@@ -57,7 +57,7 @@ namespace SkyDCore.Text
         /// <summary>
         /// 超文本协议地址格式正则匹配代码，必要选项：RegexOptions.IgnoreCase
         /// </summary>
-        public const string HttpUrlFormatRegularExpressions = @"(?<协议>http|https)://(?<地址>[%\w\.\/\?=:\-_`~&;]+)";
+        public const string HttpUrlFormatRegularExpressions = @"(?<协议>http|https)://(?<主机>[0-9a-z\-\.]+):?(?<端口>\d*)(?<地址>[0-9a-z\w\;\/\?\@\&\=\+\$\-_\.\!\~\*\'\(\)\{\}\|\\\^\[\]\`\~\<\>\#\%\""]*)";
 
         #endregion
 
