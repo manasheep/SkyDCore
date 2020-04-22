@@ -49,7 +49,7 @@ namespace SkyDCore.General
         }
 
         /// <summary>
-        /// 匹配并生成返回值。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
+        /// 匹配并生成返回值（匹配成功后自动Break）。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
         /// </summary>
         /// <param name="Value">匹配值</param>
         /// <param name="Run">执行的方法，其参数为原始值，其返回值即为返回结果</param>
@@ -59,7 +59,7 @@ namespace SkyDCore.General
         }
 
         /// <summary>
-        /// 匹配并生成返回值。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
+        /// 匹配并生成返回值（匹配成功后自动Break）。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
         /// </summary>
         /// <param name="Value">匹配值</param>
         /// <param name="ReturnValue">返回结果</param>
@@ -69,7 +69,7 @@ namespace SkyDCore.General
         }
 
         /// <summary>
-        /// 匹配并生成返回值。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
+        /// 匹配并生成返回值（匹配成功后自动Break）。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
         /// </summary>
         /// <param name="Check">匹配验证方法</param>
         /// <param name="ReturnValue">返回结果</param>
@@ -79,7 +79,7 @@ namespace SkyDCore.General
         }
 
         /// <summary>
-        /// 匹配并生成返回值。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
+        /// 匹配并生成返回值（匹配成功后自动Break）。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
         /// </summary>
         /// <param name="Check">匹配验证方法</param>
         /// <param name="Run">执行的方法，其参数为原始值，其返回值即为返回结果</param>
@@ -169,7 +169,7 @@ namespace SkyDCore.General
         }
 
         /// <summary>
-        /// 匹配并执行传入方法
+        /// 匹配并执行传入方法（匹配成功后自动Break）
         /// </summary>
         /// <param name="Value">匹配值</param>
         /// <param name="Run">执行的方法，其参数为原始值</param>
@@ -190,7 +190,7 @@ namespace SkyDCore.General
         }
 
         /// <summary>
-        /// 匹配并执行传入方法
+        /// 匹配并执行传入方法（匹配成功后自动Break）
         /// </summary>
         /// <param name="Check">匹配验证方法</param>
         /// <param name="Run">执行的方法，其参数为原始值</param>
@@ -286,7 +286,7 @@ namespace SkyDCore.General
         }
 
         /// <summary>
-        /// 匹配并执行传入方法
+        /// 匹配并执行传入方法（匹配成功后自动Break）
         /// </summary>
         /// <param name="Value">匹配值</param>
         /// <param name="Run">执行的方法，其参数为原始值</param>
@@ -308,7 +308,7 @@ namespace SkyDCore.General
 
 
         /// <summary>
-        /// 匹配并执行传入方法
+        /// 匹配并执行传入方法（匹配成功后自动Break）
         /// </summary>
         /// <param name="Check">匹配验证方法</param>
         /// <param name="Run">执行的方法，其参数为原始值</param>
@@ -348,7 +348,7 @@ namespace SkyDCore.General
         }
 
         /// <summary>
-        /// 匹配并生成返回值。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
+        /// 匹配并生成返回值（匹配成功后自动Break）。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
         /// </summary>
         /// <param name="Value">匹配值</param>
         /// <param name="Run">执行的方法，其参数为原始值，其返回值即为返回结果</param>
@@ -358,7 +358,7 @@ namespace SkyDCore.General
         }
 
         /// <summary>
-        /// 匹配并生成返回值。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
+        /// 匹配并生成返回值（匹配成功后自动Break）。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
         /// </summary>
         /// <param name="Value">匹配值</param>
         /// <param name="ReturnValue">返回结果</param>
@@ -368,7 +368,7 @@ namespace SkyDCore.General
         }
 
         /// <summary>
-        /// 匹配并生成返回值。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
+        /// 匹配并生成返回值（匹配成功后自动Break）。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
         /// </summary>
         /// <param name="Check">匹配验证方法</param>
         /// <param name="Run">执行的方法，其参数为原始值，其返回值即为返回结果</param>
@@ -378,7 +378,7 @@ namespace SkyDCore.General
         }
 
         /// <summary>
-        /// 匹配并生成返回值。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
+        /// 匹配并生成返回值（匹配成功后自动Break）。如果通过Switch指定了返回结果处理方法，那么在匹配成功时会将ReturnValue的值设为经过处理后的结果，否则将直接覆盖原有的ReturnValue值
         /// </summary>
         /// <param name="Check">匹配验证方法</param>
         /// <param name="ReturnValue">返回结果</param>

@@ -25,6 +25,34 @@ public static class SkyDCoreGeneralExtension
     static Random R = new Random();
 
     /// <summary>
+    /// 以或的形式组合两个表达式
+    /// </summary>
+    /// <typeparam name="T">类型</typeparam>
+    /// <param name="expr1">表达式1</param>
+    /// <param name="expr2">表达式2</param>
+    /// <returns>组合后的表达式</returns>
+    public static Expression<Func<T, bool>> Or<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
+    {
+        var invokedExpr = Expression.Invoke(expr2, expr1.Parameters.Cast<Expression>());
+        return Expression.Lambda<Func<T, bool>>
+              (Expression.Or(expr1.Body, invokedExpr), expr1.Parameters);
+    }
+
+    /// <summary>
+    /// 以与的形式组合两个表达式
+    /// </summary>
+    /// <typeparam name="T">类型</typeparam>
+    /// <param name="expr1">表达式1</param>
+    /// <param name="expr2">表达式2</param>
+    /// <returns>组合后的表达式</returns>
+    public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
+    {
+        var invokedExpr = Expression.Invoke(expr2, expr1.Parameters.Cast<Expression>());
+        return Expression.Lambda<Func<T, bool>>
+              (Expression.And(expr1.Body, invokedExpr), expr1.Parameters);
+    }
+
+    /// <summary>
     /// 转换为可观察集合
     /// </summary>
     /// <typeparam name="T">集合类型</typeparam>
@@ -1686,7 +1714,7 @@ backgroundWorker.RunWorkerAsync(parm);
     /// <typeparam name="T">枚举类型</typeparam>
     /// <param name="o">枚举值</param>
     /// <returns>全部值列表</returns>
-    public static List<T> GetAllEnumValueList<T>(this T o) where T:Enum
+    public static List<T> GetAllEnumValueList<T>(this T o) where T : Enum
     {
         return Enum.GetValues(o.GetType()).Cast<T>().ToList();
     }
