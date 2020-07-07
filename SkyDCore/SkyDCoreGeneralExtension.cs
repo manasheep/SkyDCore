@@ -25,6 +25,26 @@ public static class SkyDCoreGeneralExtension
     static Random R = new Random();
 
     /// <summary>
+    /// 去重。对于类对象，默认的去重功能可能无效，可以使用此扩展方法，选取特定属性，或创建匿名对象，来进行去重。
+    /// </summary>
+    /// <typeparam name="TSource">来源类型</typeparam>
+    /// <typeparam name="TKey">键类型</typeparam>
+    /// <param name="source">来源</param>
+    /// <param name="keySelector">键选择器</param>
+    /// <returns>去重后的集合</returns>
+    public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+    {
+        HashSet<TKey> seenKeys = new HashSet<TKey>();
+        foreach (TSource element in source)
+        {
+            if (seenKeys.Add(keySelector(element)))
+            {
+                yield return element;
+            }
+        }
+    }
+
+    /// <summary>
     /// 以或的形式组合两个表达式
     /// </summary>
     /// <typeparam name="T">类型</typeparam>
