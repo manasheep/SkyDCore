@@ -57,7 +57,7 @@ this.GetLogger().Info("程序启动");
       <!--切割最多文件数 -1表示不限制产生日志文件数-->
       <maxSizeRollBackups value="-1" />
       <!--单个日志文件最大的大小-->
-      <maximumFileSize value="2048KB" />
+      <maximumFileSize value="5120KB" />
       <!--是否使用静态文件名-->
       <staticLogFileName value="false" />
       <preserveLogFileNameExtension value="true"/>
@@ -69,9 +69,87 @@ this.GetLogger().Info("程序启动");
 			<LevelMax value="FATAL"/>
 		  </filter>-->
     </appender>
+    <!--输出到html文件-->
+    <appender name="RollingHtmlFileAppender_WARN" type="log4net.Appender.RollingFileAppender" >
+      <!--输出到什么目录-->
+      <file value="Logs/" />
+      <!--是否覆写到文件中-->
+      <appendToFile value="true" />
+      <!--创建文件的规则-->
+      <rollingStyle value="Composite" />
+      <datePattern value="yyyy_MM_dd_WARN'.html'"/>
+      <!--注：此处如果设为“yyyy/yyyy_MM/yyyy_MM_dd'.txt'”的话，偶尔会出现奇怪的目录层叠BUG，故放弃-->
+      <!--切割最多文件数 -1表示不限制产生日志文件数-->
+      <maxSizeRollBackups value="-1" />
+      <!--单个日志文件最大的大小-->
+      <maximumFileSize value="5120KB" />
+      <!--是否使用静态文件名-->
+      <staticLogFileName value="false" />
+      <preserveLogFileNameExtension value="true"/>
+      <!--这里的类型必须使用完全限定名，获取方法为：typeof(SkyDCore.Log.HtmlLogLayout).AssemblyQualifiedName-->
+      <layout type="SkyDCore.Log.HtmlLogLayout, SkyDCore.Log, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+      <!--过滤器-->
+      <filter type="log4net.Filter.LevelRangeFilter">
+			  <LevelMin value="WARN"/>
+			  <LevelMax value="FATAL"/>
+		  </filter>
+    </appender>
+    <!--输出到html文件-->
+    <appender name="RollingHtmlFileAppender_Error" type="log4net.Appender.RollingFileAppender" >
+      <!--输出到什么目录-->
+      <file value="Logs/" />
+      <!--是否覆写到文件中-->
+      <appendToFile value="true" />
+      <!--创建文件的规则-->
+      <rollingStyle value="Composite" />
+      <datePattern value="yyyy_MM_dd_ERROR'.html'"/>
+      <!--注：此处如果设为“yyyy/yyyy_MM/yyyy_MM_dd'.txt'”的话，偶尔会出现奇怪的目录层叠BUG，故放弃-->
+      <!--切割最多文件数 -1表示不限制产生日志文件数-->
+      <maxSizeRollBackups value="-1" />
+      <!--单个日志文件最大的大小-->
+      <maximumFileSize value="5120KB" />
+      <!--是否使用静态文件名-->
+      <staticLogFileName value="false" />
+      <preserveLogFileNameExtension value="true"/>
+      <!--这里的类型必须使用完全限定名，获取方法为：typeof(SkyDCore.Log.HtmlLogLayout).AssemblyQualifiedName-->
+      <layout type="SkyDCore.Log.HtmlLogLayout, SkyDCore.Log, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+      <!--过滤器-->
+      <filter type="log4net.Filter.LevelRangeFilter">
+        <LevelMin value="ERROR"/>
+        <LevelMax value="FATAL"/>
+      </filter>
+    </appender>
+    <!--输出到csv文件-->
+    <appender name="RollingCsvFileAppender_ERROR" type="log4net.Appender.RollingFileAppender" >
+      <!--输出到什么目录-->
+      <file value="Logs/" />
+      <!--是否覆写到文件中-->
+      <appendToFile value="true" />
+      <!--创建文件的规则-->
+      <rollingStyle value="Composite" />
+      <datePattern value="yyyy_MM_dd_ERROR'.csv'"/>
+      <!--注：此处如果设为“yyyy/yyyy_MM/yyyy_MM_dd'.txt'”的话，偶尔会出现奇怪的目录层叠BUG，故放弃-->
+      <!--切割最多文件数 -1表示不限制产生日志文件数-->
+      <maxSizeRollBackups value="-1" />
+      <!--单个日志文件最大的大小-->
+      <maximumFileSize value="5120KB" />
+      <!--是否使用静态文件名-->
+      <staticLogFileName value="false" />
+      <preserveLogFileNameExtension value="true"/>
+      <layout type="log4net.Layout.PatternLayout">
+        <conversionPattern value="&quot;%level&quot;,&quot;%date&quot;,&quot;%timestamp&quot;,&quot;%logger&quot;,&quot;%thread&quot;,&quot;%property&quot;,&quot;%message&quot;,&quot;%exception&quot;,%newline" />
+      </layout>
+      <!--过滤器-->
+      <filter type="log4net.Filter.LevelRangeFilter">
+			  <LevelMin value="ERROR"/>
+			  <LevelMax value="FATAL"/>
+		  </filter>
+    </appender>
     <root>
       <level value="ALL" />
       <appender-ref ref="RollingHtmlFileAppender" />
+      <appender-ref ref="RollingHtmlFileAppender_WARN" />
+      <appender-ref ref="RollingCsvFileAppender_ERROR" />
     </root>
   </log4net>
 </configuration>
