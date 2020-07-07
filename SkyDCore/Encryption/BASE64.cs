@@ -19,24 +19,23 @@ namespace SkyDCore.Encryption
         /// 解码字符串
         /// </summary>
         /// <param name="sInputString">输入文本</param>
-        /// <returns></returns>
-        public static string DecryptString(string sInputString)
+        /// <param name="encoding">内容字符串编码</param>
+        /// <returns>解码后的字符串</returns>
+        public static string DecryptString(string sInputString, Encoding encoding)
         {
-            char[] sInput = sInputString.ToCharArray();
+            //char[] sInput = sInputString.ToCharArray();
             try
             {
-                byte[] bOutput = System.Convert.FromBase64String(sInputString);
-                return Encoding.Default.GetString(bOutput);
+                byte[] bOutput = Convert.FromBase64String(sInputString);
+                return encoding.GetString(bOutput);
             }
-            catch (System.ArgumentNullException)
+            catch (ArgumentNullException e)
             {
-                //base 64 字符数组为null
-                return "";
+                throw new Exception("base 64 字符数组为null", e);
             }
-            catch (System.FormatException)
+            catch (FormatException e)
             {
-                //长度错误，无法整除4
-                return "";
+                throw new Exception("格式错误，可能是长度无法整除4", e);
             }
         }
 
@@ -44,23 +43,22 @@ namespace SkyDCore.Encryption
         /// 编码字符串
         /// </summary>
         /// <param name="sInputString">输入文本</param>
-        /// <returns></returns>
-        public static string EncryptString(string sInputString)
+        /// <param name="encoding">内容字符串编码</param>
+        /// <returns>编码后的字符串</returns>
+        public static string EncryptString(string sInputString, Encoding encoding)
         {
-            byte[] bInput = Encoding.Default.GetBytes(sInputString);
+            byte[] bInput = encoding.GetBytes(sInputString);
             try
             {
-                return System.Convert.ToBase64String(bInput, 0, bInput.Length);
+                return Convert.ToBase64String(bInput, 0, bInput.Length);
             }
-            catch (System.ArgumentNullException)
+            catch (ArgumentNullException e)
             {
-                //二进制数组为NULL.
-                return "";
+                throw new Exception("二进制数组为NULL", e);
             }
-            catch (System.ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException e)
             {
-                //长度不够
-                return "";
+                throw new Exception("格式错误，可能是长度不够", e);
             }
         }
 

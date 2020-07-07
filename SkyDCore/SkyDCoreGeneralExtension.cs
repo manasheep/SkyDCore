@@ -1913,22 +1913,24 @@ backgroundWorker.RunWorkerAsync(parm);
     /// 返回该字符串的BASE64编码字符串（编码为ASCII文本，用于网络传输）
     /// </summary>
     /// <param name="s"></param>
+    /// <param name="encoding">内容字符串编码</param>
     /// <returns>该字符串的BASE64编码字符串</returns>
     // ReSharper disable once InconsistentNaming
-    public static string GetEncodeBASE64String(this string s)
+    public static string GetEncodeBASE64String(this string s, Encoding encoding)
     {
-        return BASE64.EncryptString(s);
+        return BASE64.EncryptString(s, encoding);
     }
 
     /// <summary>
     /// 返回该字符串的BASE64解码字符串（解码自ASCII文本，用于网络传输）
     /// </summary>
     /// <param name="s"></param>
+    /// <param name="encoding">内容字符串编码</param>
     /// <returns>该字符串的BASE64解码字符串</returns>
     // ReSharper disable once InconsistentNaming
-    public static string GetDecodeBASE64String(this string s)
+    public static string GetDecodeBASE64String(this string s, Encoding encoding)
     {
-        return BASE64.DecryptString(s);
+        return BASE64.DecryptString(s, encoding);
     }
 
     /// <summary>
