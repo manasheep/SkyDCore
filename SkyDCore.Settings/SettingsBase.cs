@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -8,9 +9,9 @@ using System.Text;
 namespace SkyDCore.Settings
 {
     /// <summary>
-    /// 配置基类
+    /// 配置基类，该类实现了INotifyPropertyChanged接口
     /// </summary>
-    public abstract class SettingsBase
+    public abstract class SettingsBase : INotifyPropertyChanged
     {
         public SettingsBase()
         {
@@ -19,6 +20,42 @@ namespace SkyDCore.Settings
             Version = 1;
 
             BelongApplication = GetApplicationFilePath();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// 使用此方法触发PropertyChanged事件。
+        /// </summary>
+        /// <param name="propertyName">属性名称</param>
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// 使用此方法触发PropertyChanged事件。
+        /// </summary>
+        /// <param name="propertyNameArray">属性名称数组</param>
+        protected virtual void OnPropertyChanged(params string[] propertyNameArray)
+        {
+            if (PropertyChanged != null)
+            {
+                foreach (var f in propertyNameArray)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs(f));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 使用此方法触发PropertyChanged事件。
+        /// </summary>
+        ///<param name="sender">触发对象</param>
+        ///<param name="e">参数</param>
+        protected virtual void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            PropertyChanged?.Invoke(sender, e);
         }
 
         /// <summary>
@@ -36,30 +73,89 @@ namespace SkyDCore.Settings
         }
 
         /// <summary>
-        /// 默认文件保存路径
+        /// 默认配置文件保存路径
         /// </summary>
         public static string DefaultSaveFilePath => AppContext.BaseDirectory.AsPathString().Combine($"{GetApplicationFilePath().AsPathString().FileName}.SkyDSettings");
 
         /// <summary>
-        /// ID（首次创建时自动生成）
+        /// 默认配置文件是否存在
         /// </summary>
-        public Guid Id { get; set; }
+        public static bool IsDefaultSaveFileExists => File.Exists(DefaultSaveFilePath);
+
         /// <summary>
-        /// 所属应用（首次创建时自动记录）
+        /// ID（首次创建时自动生成）。该属性支持INotifyPropertyChanged接口，在值更改时会自动调用本类或基类的OnPropertyChanged方法，继而触发PropertyChanged事件。
         /// </summary>
-        public string BelongApplication { get; set; }
+        public Guid Id
+        {
+            get { return _Id; }
+            set
+            {
+                if (_Id == value) return;
+                _Id = value;
+                OnPropertyChanged(nameof(Id));
+            }
+        }
+        private Guid _Id;
+
         /// <summary>
-        /// 创建时间
+        /// 所属应用（首次创建时自动记录）。该属性支持INotifyPropertyChanged接口，在值更改时会自动调用本类或基类的OnPropertyChanged方法，继而触发PropertyChanged事件。
         /// </summary>
-        public DateTime CreateTime { get; set; }
+        public string BelongApplication
+        {
+            get { return _BelongApplication; }
+            set
+            {
+                if (_BelongApplication == value) return;
+                _BelongApplication = value;
+                OnPropertyChanged(nameof(BelongApplication));
+            }
+        }
+        private string _BelongApplication;
+
         /// <summary>
-        /// 最后更新时间（每次保存时自动变化）
+        /// 创建时间。该属性支持INotifyPropertyChanged接口，在值更改时会自动调用本类或基类的OnPropertyChanged方法，继而触发PropertyChanged事件。
         /// </summary>
-        public DateTime LastUpdateTime { get; set; }
+        public DateTime CreateTime
+        {
+            get { return _CreateTime; }
+            set
+            {
+                if (_CreateTime == value) return;
+                _CreateTime = value;
+                OnPropertyChanged(nameof(CreateTime));
+            }
+        }
+        private DateTime _CreateTime;
+
         /// <summary>
-        /// 版本（每次保存时自动增加）
+        /// 最后更新时间（每次保存时自动变化）。该属性支持INotifyPropertyChanged接口，在值更改时会自动调用本类或基类的OnPropertyChanged方法，继而触发PropertyChanged事件。
         /// </summary>
-        public long Version { get; set; }
+        public DateTime LastUpdateTime
+        {
+            get { return _LastUpdateTime; }
+            set
+            {
+                if (_LastUpdateTime == value) return;
+                _LastUpdateTime = value;
+                OnPropertyChanged(nameof(LastUpdateTime));
+            }
+        }
+        private DateTime _LastUpdateTime;
+
+        /// <summary>
+        /// 版本（每次保存时自动增加）。该属性支持INotifyPropertyChanged接口，在值更改时会自动调用本类或基类的OnPropertyChanged方法，继而触发PropertyChanged事件。
+        /// </summary>
+        public long Version
+        {
+            get { return _Version; }
+            set
+            {
+                if (_Version == value) return;
+                _Version = value;
+                OnPropertyChanged(nameof(Version));
+            }
+        }
+        private long _Version;
 
         /// <summary>
         /// 获取Json字符串
@@ -67,7 +163,14 @@ namespace SkyDCore.Settings
         /// <returns>Json字符串</returns>
         public virtual string GetJson()
         {
-            return JsonConvert.SerializeObject(this);
+            var settings = new JsonSerializerSettings();
+            // 设置日期格式
+            settings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+            // 忽略空值
+            settings.NullValueHandling = NullValueHandling.Include;
+            // 缩进
+            settings.Formatting = Formatting.Indented;
+            return JsonConvert.SerializeObject(this, settings);
         }
 
         /// <summary>
