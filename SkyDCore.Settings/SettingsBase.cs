@@ -274,5 +274,21 @@ namespace SkyDCore.Settings
         {
             LoadByJson(this, json);
         }
+
+        /// <summary>
+        /// 如果路径指向的文件已存在，则读取，否则会保存以创建之
+        /// </summary>
+        /// <param name="filePath">文件路径，如果不存在，则使用DefaultSaveFilePath</param>
+        public virtual void LoadOrCreate(string filePath = null)
+        {
+            if (IsDefaultSaveFileExists)
+            {
+                Load(filePath);
+            }
+            else
+            {
+                Save(filePath);
+            }
+        }
     }
 }
