@@ -12,6 +12,8 @@ using SixLabors.Primitives;
 using SixLabors.ImageSharp.Formats;
 using SkyDCore.Mathematics;
 using SixLabors.Fonts;
+using SixLabors.Shapes;
+using System.Numerics;
 
 namespace SkyDCore.Drawing
 {
@@ -794,6 +796,49 @@ namespace SkyDCore.Drawing
             }
 
             return new SixLabors.Primitives.Size(ow, oh);
+        }
+
+        /// <summary>
+        /// 应用圆角
+        /// </summary>
+        /// <param name="img">图像</param>
+        /// <param name="cornerRadius">圆角半径</param>
+        public static void ApplyRoundedCorners(this Image<Rgba32> img, float cornerRadius)
+        {
+            img.Mutate(x => x.ApplyRoundedCorners(cornerRadius));
+        }
+
+        /// <summary>
+        /// 应用圆角
+        /// </summary>
+        /// <param name="context">图像修改上下文</param>
+        /// <param name="cornerRadius">圆角半径</param>
+        /// <returns>图像修改上下文</returns>
+        public static IImageProcessingContext<Rgba32> ApplyRoundedCorners(this IImageProcessingContext<Rgba32> context, float cornerRadius)
+        {
+            var size = context.GetCurrentSize();
+            IPathCollection corners = BuildCorners(size.Width, size.Height, cornerRadius);
+            var graphicOptions = new GraphicsOptions(true) { BlenderMode = PixelBlenderMode.Src };
+            context.Fill(graphicOptions, Rgba32.Transparent, corners);
+            return context;
+        }
+
+        private static IPathCollection BuildCorners(int imageWidth, int imageHeight, float cornerRadius)
+        {
+            var rect = new RectangularPolygon(-0.5f, -0.5f, cornerRadius, cornerRadius);
+
+            IPath cornerToptLeft = rect.Clip(new EllipsePolygon(cornerRadius - 0.5f, cornerRadius - 0.5f, cornerRadius));
+
+            var center = new Vector2(imageWidth / 2F, imageHeight / 2F);
+
+            float rightPos = imageWidth - cornerToptLeft.Bounds.Width + 1;
+            float bottomPos = imageHeight - cornerToptLeft.Bounds.Height + 1;
+
+            IPath cornerTopRight = cornerToptLeft.RotateDegree(90).Translate(rightPos, 0);
+            IPath cornerBottomLeft = cornerToptLeft.RotateDegree(-90).Translate(0, bottomPos);
+            IPath cornerBottomRight = cornerToptLeft.RotateDegree(180).Translate(rightPos, bottomPos);
+
+            return new PathCollection(cornerToptLeft, cornerBottomLeft, cornerTopRight, cornerBottomRight);
         }
     }
 }
