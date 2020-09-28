@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -11,7 +12,7 @@ namespace SkyDCore.Settings
     {
         protected override System.Collections.Generic.IList<JsonProperty> CreateProperties(System.Type type, MemberSerialization memberSerialization)
         {
-            return base.CreateProperties(type, memberSerialization).OrderBy(p => p.PropertyName, StringComparer.Ordinal).ToList();
+            return base.CreateProperties(type, memberSerialization).OrderBy(p => p.PropertyName, StringComparer.Create(new CultureInfo("zh-CN"), false)).ToList();
         }
     }
 
