@@ -27,7 +27,7 @@ namespace SkyDCore.IO
         /// <param name="s">字符串</param>
         /// <param name="encoding">编码</param>
         /// <returns>内存流</returns>
-        public static MemoryStream ToMemoryStream(this string s,Encoding encoding)
+        public static MemoryStream ToMemoryStream(this string s, Encoding encoding)
         {
             return new MemoryStream(encoding.GetBytes(s));
         }
@@ -147,6 +147,24 @@ namespace SkyDCore.IO
             var t = s.ReadToEnd();
             s.Close();
             return t;
+        }
+
+        /// <summary>
+        /// 从文件中逐行读出文本内容
+        /// </summary>
+        /// <param name="filePath">要打开的文件路径</param>
+        /// <param name="encoding">编码格式</param>
+        /// <param name="predicate">对每行内容做出处理和判断，如果返回false则终止读取</param>
+        public static void ReadFileByLine(string filePath, Encoding encoding, Predicate<string> predicate)
+        {
+            var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            var s = new StreamReader(fs, encoding);
+            string line;
+            while ((line = s.ReadLine()) != null)
+            {
+                if (!predicate(line)) break;
+            }
+            s.Close();
         }
 
         /// <summary>
