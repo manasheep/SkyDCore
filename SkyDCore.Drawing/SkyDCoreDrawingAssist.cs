@@ -99,7 +99,7 @@ namespace SkyDCore.Drawing
         }
 
         /// <summary>
-        /// 将图像保存为JPEG格式文件
+        /// 将图像保存为JPEG格式文件并写入流
         /// </summary>
         /// <param name="img">图像</param>
         /// <param name="stream">可写入的流</param>
@@ -107,6 +107,19 @@ namespace SkyDCore.Drawing
         public static void SaveAsJpegToStream<TPixel>(this Image<TPixel> img, Stream stream, int quality) where TPixel : struct, IPixel<TPixel>
         {
             img.Save(stream, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder() { Quality = quality });
+        }
+
+        /// <summary>
+        /// 将图像保存为PNG格式文件并写入内存流
+        /// </summary>
+        /// <param name="JPEG">图像</param>
+        /// <param name="quality">JPEG编码质量，取值0-100，通常使用75</param>
+        public static MemoryStream SaveAsJpegToMemoryStream<TPixel>(this Image<TPixel> img, int quality) where TPixel : struct, IPixel<TPixel>
+        {
+            var ms = new MemoryStream();
+            img.SaveAsJpegToStream(ms, quality);
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms;
         }
 
         /// <summary>
@@ -120,7 +133,7 @@ namespace SkyDCore.Drawing
         }
 
         /// <summary>
-        /// 将图像保存为PNG格式文件
+        /// 将图像保存为PNG格式文件并写入流
         /// </summary>
         /// <param name="img">图像</param>
         /// <param name="stream">可写入的流</param>
@@ -129,6 +142,17 @@ namespace SkyDCore.Drawing
             img.Save(stream, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
         }
 
+        /// <summary>
+        /// 将图像保存为PNG格式文件并写入内存流
+        /// </summary>
+        /// <param name="img">图像</param>
+        public static MemoryStream SaveAsPngToMemoryStream<TPixel>(this Image<TPixel> img) where TPixel : struct, IPixel<TPixel>
+        {
+            var ms = new MemoryStream();
+            img.SaveAsPngToStream(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms;
+        }
 
         /// <summary>
         /// 根据Exif信息自动旋转
