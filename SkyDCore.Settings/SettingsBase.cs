@@ -206,13 +206,14 @@ namespace SkyDCore.Settings
         /// <param name="filePath">文件路径，如果不存在，则使用DefaultSaveFilePath</param>
         public virtual void LoadOrCreate(string filePath = null)
         {
-            if (IsDefaultSaveFileExists)
+            var path = filePath ?? DefaultSaveFilePath;
+            if (File.Exists(path))
             {
-                Load(filePath);
+                Load(path);
             }
             else
             {
-                Save(filePath);
+                Save(path);
             }
         }
     }
