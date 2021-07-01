@@ -150,7 +150,11 @@ namespace SkyDCore.Settings
         /// <returns>配置文件对象</returns>
         public static T LoadByJson<T>(string json) where T : SettingsBase
         {
-            return JsonConvert.DeserializeObject<T>(json);
+            var serializerSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+            return JsonConvert.DeserializeObject<T>(json, serializerSettings);
         }
 
         /// <summary>
@@ -178,7 +182,11 @@ namespace SkyDCore.Settings
         /// <param name="json">Json字符串</param>
         public static void LoadByJson<T>(T obj, string json) where T : SettingsBase
         {
-            var serializerSettings = new JsonSerializerSettings { ObjectCreationHandling = ObjectCreationHandling.Replace };
+            var serializerSettings = new JsonSerializerSettings
+            {
+                ObjectCreationHandling = ObjectCreationHandling.Replace,
+                NullValueHandling = NullValueHandling.Ignore
+            };
             JsonConvert.PopulateObject(json, obj, serializerSettings);
         }
 
