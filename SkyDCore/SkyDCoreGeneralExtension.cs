@@ -1524,6 +1524,26 @@ public static class SkyDCoreGeneralExtension
     }
 
     /// <summary>
+    /// 限定值的范围
+    /// </summary>
+    /// <param name="v">原值</param>
+    /// <param name="minValue">最小值，为空则不做限定</param>
+    /// <param name="maxValue">最大值，为空则不做限定</param>
+    /// <returns>限定后的值</returns>
+    public static T LimitRange<T>(this T v, T? minValue, T? maxValue) where T : struct, IConvertible, IComparable<T>
+    {
+        if (minValue.HasValue && minValue.Value.CompareTo(v) > 0)
+        {
+            return minValue.Value;
+        }
+        if (maxValue.HasValue && v.CompareTo(maxValue.Value) > 0)
+        {
+            return maxValue.Value;
+        }
+        return v;
+    }
+
+    /// <summary>
     /// 转换匿名类型。这个需求来源于界面中使用BackgroundWorker，为了给DoWork传递多个参数，又不想定义一个类型来完成，于是我会用到TolerantCast方法。
     /// 来源：http://www.cnblogs.com/JamesLi2015/p/4663292.html
     /// </summary>
@@ -1839,7 +1859,7 @@ backgroundWorker.RunWorkerAsync(parm);
     }
 
     /// <summary>
-    /// 将对象的所有属性及字段的值复制到另一个对象上
+    /// 将对象的所有属性及字段的值复制到另一个对象上（浅拷贝）
     /// </summary>
     /// <typeparam name="T">类型</typeparam>
     /// <param name="o">对象</param>
